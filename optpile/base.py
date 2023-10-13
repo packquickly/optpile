@@ -4,7 +4,7 @@ from typing import Generic, Optional
 from typing_extensions import TypeVar
 
 import equinox as eqx
-from equinox import AbstractClassVar
+from equinox import AbstractClassVar, AbstractVar
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
 from .custom_types import RandomGenerator
@@ -13,12 +13,19 @@ from .custom_types import RandomGenerator
 Out = TypeVar("Out")
 
 
+class Minimum(eqx.Module):
+    min: Optional[float]
+    argmin: Optional[PyTree]
+
+
 class Difficulty(Enum):
     EASY = "easy"
     HARD = "hard"
 
 
 class AbstractTestProblem(eqx.Module, Generic[Out]):
+    in_dim: AbstractVar[int]
+    out_dim: AbstractVar[int]
     name: AbstractClassVar[str]
     difficulty: AbstractClassVar[Optional[Difficulty]]
 
@@ -58,7 +65,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out]):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray]
-    ) -> list[PyTree[Array]]:
+    ) -> list[Optional[PyTree[Array]]]:
         """Returns a list of any arguments the problem may use. This can include
         specificwparameters used in test functions. Each set of args in the list
         defines a separate test problem.
@@ -92,8 +99,8 @@ class AbstractTestProblem(eqx.Module, Generic[Out]):
 
 
 class AbstractMinimisationProblem(AbstractTestProblem[Scalar]):
-    minimum: AbstractClassVar[Optional[Scalar]]
+    minimum: AbstractVar[Minimum]
 
 
 class AbstractLeastSquaresProblem(AbstractTestProblem[PyTree[Array]]):
-    minimum: AbstractClassVar[Optional[Scalar]]
+    minimum: AbstractVar[Minimum]

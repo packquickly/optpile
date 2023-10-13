@@ -1,11 +1,14 @@
-from typing import Literal, Optional, overload, Union
+import functools as ft
+import inspect
+from typing import cast, Literal, Optional, overload, Union
 
 import equinox as eqx
 import jax
 import jax.core
 import jax.numpy as jnp
 import jax.tree_util as jtu
-from jaxtyping import Array, ArrayLike, PyTree
+from equinox.internal import ω
+from jaxtyping import Array, ArrayLike, PyTree, Scalar
 
 
 #
@@ -13,6 +16,10 @@ from jaxtyping import Array, ArrayLike, PyTree
 # Most of these are taken from Optimistix:
 # (https://github.com/patrick-kidger/optimistix)
 #
+
+
+def array_tuple(in_list: list[Union[float, int, bool, Scalar]]) -> tuple[Array]:
+    return cast(tuple[Array], tuple(jnp.asarray(x) for x in in_list))
 
 
 def additive_perturbation(fn):
@@ -24,8 +31,16 @@ def additive_perturbation(fn):
     about returning the deterministic values
     """
 
-    def wrapper(random_generator, options, *, key):
-        tree = fn(random_generator, options, key=key)
+    @ft.wraps(fn)
+    def wrapper(*args, **kwargs):
+        sig = inspect.signature(fn)
+        ba = sig.bind(*args, **kwargs)
+        ba.apply_defaults()
+
+        random_generator = ba.arguments["random_generator"]
+        key = ba.arguments["key"]
+
+        tree = fn(*args, **kwargs)
         if random_generator is not None:
             if key is None:
                 raise ValueError(
@@ -34,10 +49,24 @@ def additive_perturbation(fn):
                 )
             perturbation = random_generator(tree, key=key)
         else:
-            perturbation = tree_full_like(tree, 0.0)
-        return tree + perturbation
+            perturbation = tree_full_like(tree, jnp.array(0.0))
+        return (tree**ω + perturbation**ω).ω
 
     return wrapper
+
+
+def fixed_dim(options: Optional[dict], name: str) -> None:
+    if options is None:
+        pass
+    else:
+        try:
+            options["dimension"]
+            raise ValueError(
+                f"{name} does not support variable dimensions, "
+                "the requested dimensions will be ignored."
+            )
+        except KeyError:
+            pass
 
 
 def get_dim(options: Optional[dict], *, default: int):
@@ -45,7 +74,6 @@ def get_dim(options: Optional[dict], *, default: int):
         dim = default
     else:
         try:
-            breakpoint()
             dim = options["dimension"]
         except KeyError:
             dim = default
