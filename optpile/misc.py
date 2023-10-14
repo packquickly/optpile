@@ -1,6 +1,6 @@
 import functools as ft
 import inspect
-from typing import cast, Literal, Optional, overload, Union
+from typing import cast, Literal, overload, Union
 
 import equinox as eqx
 import jax
@@ -53,31 +53,6 @@ def additive_perturbation(fn):
         return (tree**ω + perturbation**ω).ω
 
     return wrapper
-
-
-def fixed_dim(options: Optional[dict], name: str) -> None:
-    if options is None:
-        pass
-    else:
-        try:
-            options["dimension"]
-            raise ValueError(
-                f"{name} does not support variable dimensions, "
-                "the requested dimensions will be ignored."
-            )
-        except KeyError:
-            pass
-
-
-def get_dim(options: Optional[dict], *, default: int):
-    if options is None:
-        dim = default
-    else:
-        try:
-            dim = options["dimension"]
-        except KeyError:
-            dim = default
-    return dim
 
 
 def default_floating_dtype():
