@@ -1,16 +1,12 @@
 import abc
 from enum import Enum
 from typing import Generic, Optional
-from typing_extensions import TypeVar
 
 import equinox as eqx
 from equinox import AbstractClassVar, AbstractVar
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
-from .custom_types import RandomGenerator
-
-
-Out = TypeVar("Out")
+from .custom_types import Args, Out, RandomGenerator, Y
 
 
 class Minimum(eqx.Module):
@@ -23,9 +19,7 @@ class Difficulty(Enum):
     HARD = "hard"
 
 
-class AbstractTestProblem(eqx.Module, Generic[Out]):
-    in_dim: AbstractVar[int]
-    out_dim: AbstractVar[int]
+class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
     name: AbstractClassVar[str]
     difficulty: AbstractClassVar[Optional[Difficulty]]
 
@@ -36,7 +30,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out]):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray]
-    ) -> PyTree[Array]:
+    ) -> Y:
         """Returns a reasonable default initialisation for the problem.
 
         Accepts a `random_generator`, a function which takes a PyTree of
@@ -51,9 +45,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out]):
             `jax.ShapeDtypeStruct` and a keyword argument `key` taking a JAX PRNGKey
             and returning a random array with the same shape and dtype as `struct`.
             Optional.
-        - `options`: Any other options the user may want to pass. Many solvers support
-            passing a specific dimension with `options["dimension"]`.
-            Optional.
+        - `options`: Any other problem-dependent options.
         - `key`: A JAX PRNGKey. Optional, keyword only.
         """
         ...
@@ -65,7 +57,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out]):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray]
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> list[Optional[Args]]:
         """Returns a list of any arguments the problem may use. This can include
         specificwparameters used in test functions. Each set of args in the list
         defines a separate test problem.
@@ -82,25 +74,27 @@ class AbstractTestProblem(eqx.Module, Generic[Out]):
             `jax.ShapeDtypeStruct` and a keyword argument `key` taking a JAX PRNGKey
             and returning a random array with the same shape and dtype as `struct`.
             Optional.
-        - `options`: Any other options the user may want to pass. Many solvers support
-            passing a specific dimension with `options["dimension"]`.
-            A custom init can be passed through options using `options["init"]`.
-            Optional.
+        - `options`: Any other problem-dependent options.
         - `key`: A JAX PRNGKey. Optional, keyword only.
         """
         ...
 
     @abc.abstractmethod
-    def fn(self, x: PyTree[Array], args: PyTree[Array]) -> Out:
+    def fn(self, y: Y, args: Args) -> Out:
         """The actual test function. Accepts a pytree of arrays `x`
         and a pytree of parameters `args`.
         """
         ...
 
 
-class AbstractMinimisationProblem(AbstractTestProblem[Scalar]):
+class AbstractMinimisationProblem(AbstractTestProblem[Scalar, PyTree[Array], PyTree]):
     minimum: AbstractVar[Minimum]
+    in_dim: AbstractVar[int]
 
 
-class AbstractLeastSquaresProblem(AbstractTestProblem[PyTree[Array]]):
+class AbstractLeastSquaresProblem(
+    AbstractTestProblem[PyTree[Array], PyTree[Array], PyTree]
+):
     minimum: AbstractVar[Minimum]
+    in_dim: AbstractVar[int]
+    out_dim: AbstractVar[int]

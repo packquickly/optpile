@@ -1,7 +1,13 @@
-from typing import Protocol
+from typing import Protocol, Union
+from typing_extensions import TypeVar
 
 import jax
 from jaxtyping import Array, PRNGKeyArray, PyTree
+
+
+Out = TypeVar("Out", bound=Union[PyTree[Array], Array])
+Y = TypeVar("Y", bound=Union[PyTree[Array], Array])
+Args = TypeVar("Args", bound=PyTree[Array])
 
 
 class RandomGenerator(Protocol):
