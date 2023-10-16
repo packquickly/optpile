@@ -57,7 +57,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray]
-    ) -> list[Optional[Args]]:
+    ) -> Optional[Args]:
         """Returns a list of any arguments the problem may use. This can include
         specificwparameters used in test functions. Each set of args in the list
         defines a separate test problem.

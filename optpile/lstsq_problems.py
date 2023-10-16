@@ -108,8 +108,8 @@ class SimpleBowl(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree]]:
-        return [jnp.ones(self.in_dim)]
+    ) -> Optional[PyTree]:
+        return jnp.ones(self.in_dim)
 
     def fn(self, y: PyTree[Array], args: PyTree) -> PyTree[Array]:
         return (args**ω * ω(y).call(jnp.square)).ω
@@ -151,8 +151,8 @@ class DecoupledRosenbrock(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         # Rosenbrock doesn't translate well to PyTrees
@@ -196,8 +196,8 @@ class CoupledRosenbrock(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         flat_y, _ = jfu.ravel_pytree(y)
@@ -231,8 +231,8 @@ class FreudensteinRoth(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([13.0, 5.0, 2.0, 29.0, 1.0, 14.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([13.0, 5.0, 2.0, 29.0, 1.0, 14.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -267,8 +267,8 @@ class PowellBadlyScaled(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1e4, 1.0, 1.0001])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1e4, 1.0, 1.0001])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -303,8 +303,8 @@ class BrownBadlyScaled(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1e6, 2, 1e-6, 2])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1e6, 2, 1e-6, 2])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -340,10 +340,10 @@ class Beale(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         i = jnp.arange(1, 4)
         z_i = jnp.array([1.5, 2.25, 2.625])
-        return [(i, z_i)]
+        return (i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -387,11 +387,11 @@ class JennrichSampson(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         c1 = jnp.array(2.0)
         c2 = jnp.array(2.0)
         i = jnp.arange(1, self.out_dim + 1)
-        return [(c1, c2, i)]
+        return (c1, c2, i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -424,8 +424,8 @@ class HelicalValley(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, 1.0, 0.5])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, 1.0, 0.5])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3 = y
@@ -471,7 +471,7 @@ class Bard(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         u_i = jnp.arange(1, 16)
         v_i = 16 - u_i
         w_i = jnp.minimum(u_i, v_i)
@@ -481,7 +481,7 @@ class Bard(AbstractLeastSquaresProblem):
             0.37, 0.58, 0.73, 0.96, 1.34, 2.10, 4.39
         ])
         # fmt: on
-        return [(u_i, v_i, w_i, z_i)]
+        return (u_i, v_i, w_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3 = y
@@ -514,7 +514,7 @@ class Gaussian(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         i = jnp.arange(1, 16)
         t_i = (8 - i) / 2
         # fmt: off
@@ -524,7 +524,7 @@ class Gaussian(AbstractLeastSquaresProblem):
                 0.1295, 0.0540, 0.0175, 0.0044, 0.0009,
             ])
         # fmt: on
-        return [(t_i, z_i)]
+        return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3 = y
@@ -557,7 +557,7 @@ class Meyer(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         i = jnp.arange(1, self.out_dim + 1)
         t_i = 45 + 5 * i
         # fmt: off
@@ -566,7 +566,7 @@ class Meyer(AbstractLeastSquaresProblem):
             8261,  7030,  6005,  5147,  4427,  3820,  3307,  2872
         ])
         # fmt: on
-        return [(t_i, z_i)]
+        return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3 = y
@@ -605,11 +605,11 @@ class GULFRnD(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         i = jnp.arange(1, self.out_dim + 1)
         t_i = i / 100
         z_i = 25 + (-50 * jnp.log(t_i)) ** (2 / 3)
-        return [(i, t_i, z_i)]
+        return (i, t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3 = y
@@ -646,10 +646,10 @@ class BoxThreeDim(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = (0.1) * jnp.arange(1, self.out_dim + 1)
         c = jnp.array(10)
-        return [(t_i, c)]
+        return (t_i, c)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3 = y
@@ -683,8 +683,8 @@ class PowellSingular(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, jnp.sqrt(5), 2.0, jnp.sqrt(10)])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, jnp.sqrt(5), 2.0, jnp.sqrt(10)])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4 = y
@@ -721,11 +721,11 @@ class Wood(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         coeffs = array_tuple(
             [10.0, 1.0, jnp.sqrt(90.0), 1.0, jnp.sqrt(10), jax.lax.rsqrt(10.0)]
         )
-        return [coeffs]
+        return coeffs
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4 = y
@@ -765,7 +765,7 @@ class KowalikOsborne(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         jnp.arange(1, 12)
         z_i = jnp.array(
             [
@@ -785,7 +785,7 @@ class KowalikOsborne(AbstractLeastSquaresProblem):
         u_i = jnp.array(
             [4.0, 2.0, 1.0, 0.5, 0.25, 0.167, 0.125, 0.1, 0.0833, 0.0714, 0.0625]
         )
-        return [(z_i, u_i)]
+        return (z_i, u_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4 = y
@@ -829,9 +829,9 @@ class BrownDennis(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = jnp.arange(1, self.out_dim + 1) / 5
-        return [t_i]
+        return t_i
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4 = y
@@ -865,7 +865,7 @@ class Osborne1(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # This is (i - 1) in TUOS since they use 1-indexing.
         t_i = 10 * jnp.arange(33)
         # fmt: off
@@ -876,7 +876,7 @@ class Osborne1(AbstractLeastSquaresProblem):
             0.431, 0.424, 0.420, 0.414, 0.411, 0.406
         ])
         # fmt: on
-        return [(t_i, z_i)]
+        return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4, y5 = y
@@ -917,11 +917,11 @@ class BiggsEXP6(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         i = jnp.arange(1, self.out_dim + 1)
         t_i = (0.1) * i
         z_i = jnp.exp(-t_i) - 5 * jnp.exp(-10 * t_i) + 3 * jnp.exp(-4 * t_i)
-        return [(t_i, z_i)]
+        return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4, y5, y6 = y
@@ -955,7 +955,7 @@ class Osborne2(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = jnp.arange(1, self.out_dim + 1) / 10
         # fmt: off
         z_i = jnp.array([
@@ -969,7 +969,7 @@ class Osborne2(AbstractLeastSquaresProblem):
             0.098, 0.054
         ])
         # fmt: on
-        return [(t_i, z_i)]
+        return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11 = y
@@ -1022,9 +1022,9 @@ class Watson(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = jnp.arange(1, 30) / 30
-        return [t_i]
+        return t_i
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         t_i = args
@@ -1084,8 +1084,8 @@ class ExtendedPowellSingular(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, jnp.sqrt(5.0), 2.0, jnp.sqrt(10.0)])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, jnp.sqrt(5.0), 2.0, jnp.sqrt(10.0)])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4 = args
@@ -1138,8 +1138,8 @@ class PenaltyFunction1(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([jnp.sqrt(1e-5), 1, 0.25])]
+    ) -> Optional[PyTree]:
+        return array_tuple([jnp.sqrt(1e-5), 1, 0.25])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3 = args
@@ -1183,10 +1183,10 @@ class PenaltyFunction2(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         i = jnp.arange(2, self.in_dim + 1)
         z_i = jnp.exp(i / 10) + jnp.exp((i - 1) / 10)
-        return [(z_i, jnp.asarray(jnp.sqrt(1e-5)), jnp.asarray(1.0))]
+        return (z_i, jnp.asarray(jnp.sqrt(1e-5)), jnp.asarray(1.0))
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         z_i, c1, c2 = args
@@ -1230,8 +1230,8 @@ class VariablyDimensioned(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [(jnp.array(1.0))]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -1273,8 +1273,8 @@ class Trigonometric(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1313,10 +1313,10 @@ class BrownAlmostLinear(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # The constants are closely tied in a way that doesn't make sense to
         # include as args here.
-        return [None]
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1356,10 +1356,10 @@ class DiscreteBoundary(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # h and t_i are natural candidates for `args` but don't work easily
         # in practice. May change this in the future but it's not high priority.
-        return [None]
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         h = 1 / (self.in_dim + 1)
@@ -1401,10 +1401,10 @@ class DiscreteIntegral(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # h and t_i are natural candidates for `args` but don't work easily
         # in practice. May change this in the future but it's not high priority.
-        return [None]
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1446,8 +1446,8 @@ class BroydenTridiagonal(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([3.0, 2.0, 2.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([3.0, 2.0, 2.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4 = args
@@ -1490,8 +1490,8 @@ class BroydenBanded(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 5.0, 1.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 5.0, 1.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4 = args
@@ -1540,8 +1540,8 @@ class LinearFullRank(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1590,8 +1590,8 @@ class LinearRank1(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1642,8 +1642,8 @@ class LinearRank1Zero(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1696,8 +1696,8 @@ class Chebyquad(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         index = jnp.arange(1, self.out_dim + 1)
@@ -1749,8 +1749,8 @@ class WhiteHolst(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -1791,8 +1791,8 @@ class PSC1(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -1830,8 +1830,8 @@ class FullHessian1(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([3.0, 2.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([3.0, 2.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -1875,8 +1875,8 @@ class FullHessian2(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([5.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([5.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -1919,8 +1919,8 @@ class FLETCHCR(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -1958,8 +1958,8 @@ class BDQRTIC(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([4.0, 3.0, 2.0, 3.0, 4.0, 5.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([4.0, 3.0, 2.0, 3.0, 4.0, 5.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4, c5, c6 = args
@@ -2001,8 +2001,8 @@ class TRIDIA(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 1.0, 1.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 1.0, 1.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4 = args
@@ -2044,8 +2044,8 @@ class ARGLINB(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -2087,8 +2087,8 @@ class NODIA(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1.0, 10.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 10.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2132,8 +2132,8 @@ class NONDQUAR(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -2180,8 +2180,8 @@ class POWER(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([4.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([4.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2221,8 +2221,8 @@ class CRAGGLVY(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -2275,8 +2275,8 @@ class EDENSCH(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([16.0, 2.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([16.0, 2.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3 = args
@@ -2319,8 +2319,8 @@ class CUBE(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1.0, 10.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 10.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2365,8 +2365,8 @@ class ARGLINC(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([jnp.sqrt(2), 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([jnp.sqrt(2), 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2410,9 +2410,9 @@ class GENHUMPS(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [array_tuple([2.0, jnp.sqrt(0.05)])]
+        return array_tuple([2.0, jnp.sqrt(0.05)])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2455,9 +2455,9 @@ class NONSCOMP(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [array_tuple([1.0, 4.0])]
+        return array_tuple([1.0, 4.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2497,9 +2497,9 @@ class VARDIM(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [None]
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -2541,9 +2541,9 @@ class QUARTC(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [jnp.array(1.0)]
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -2581,9 +2581,9 @@ class SINQUAD(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [None]
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -2622,9 +2622,9 @@ class DENSCHNB(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [array_tuple([2.0, 1.0])]
+        return array_tuple([2.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2662,9 +2662,9 @@ class DENSCHNF(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [array_tuple([2.0, 8.0, 5.0, 3.0, 9.0])]
+        return array_tuple([2.0, 8.0, 5.0, 3.0, 9.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4, c5 = args
@@ -2706,8 +2706,8 @@ class LIARWHD(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -2748,8 +2748,8 @@ class DIXON3DQ(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1 = y[0]
@@ -2790,8 +2790,8 @@ class GeneralisedQuartic(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -2825,8 +2825,8 @@ class SINCOS(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -2863,8 +2863,8 @@ class Booth(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 7.0, 5.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 7.0, 5.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -2900,10 +2900,10 @@ class DeVilliersGlasser1(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = 0.1 * (jnp.arange(1, self.out_dim + 1) - 1)
         y_i = 60.137 * (1.371**t_i) * jnp.sin(3.112 * t_i + 1.761)
-        return [(t_i, y_i)]
+        return (t_i, y_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4 = y
@@ -2937,11 +2937,11 @@ class DeVilliersGlasser2(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = 0.1 * (jnp.arange(1, self.out_dim + 1) - 1)
         z_i = 53.81 * (1.27**t_i) * jnp.tanh(3.012 * t_i + jnp.sin(2.13 * t_i))
         z_i = z_i * jnp.cos(jnp.exp(0.508) * t_i)
-        return [(t_i, z_i)]
+        return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4, y5 = y
@@ -2980,8 +2980,8 @@ class ElAttarVidyasagarDutta(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([10.0, 7.0, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([10.0, 7.0, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -3038,7 +3038,7 @@ class CoatingThickness(AbstractLeastSquaresProblem):
         options: Optional[dict] = None,
         *,
         key: PRNGKeyArray = jr.PRNGKey(0),
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # TODO(packquickly): document this well. The problem requires a PRNGKey
         # always, but only a random generator to incorporate measurement error.
         dim2 = self.out_dim // 2
@@ -3059,7 +3059,7 @@ class CoatingThickness(AbstractLeastSquaresProblem):
             z_1 = z_1 + random_generator(jax.eval_shape(lambda: z_1), key=y_1_key)
             z_2 = z_2 + random_generator(jax.eval_shape(lambda: z_2), key=y_2_key)
 
-        return [(gridpoints, z_1, z_2)]
+        return (gridpoints, z_1, z_2)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         params, perturbations = y
