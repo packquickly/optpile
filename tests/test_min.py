@@ -17,8 +17,11 @@ def test_problems(problem):
         pass
     elif problem.minimum.min is not None:
         if problem.minimum.argmin is not None:
+            init = problem.init()
             args = problem.args()
             found_min = problem.fn(problem.minimum.argmin, args)
+            # make sure init is correct shape and not just the argmin
+            problem.fn(init, args)
             assert jnp.allclose(found_min, problem.minimum.min, atol=1e-5)
         else:
             # If we don't have a known argmin, just try to solve the equation
@@ -32,8 +35,7 @@ def test_problems(problem):
     else:
         # If we don't have the minimum at all, just run a smoke screen test and
         # make sure the function works.
-        solver = optx.LevenbergMarquardt(rtol=1e-6, atol=1e-6)
         init = problem.init()
         args = problem.args()
-        problem.fn(init, args)
-        assert True
+        found_min = problem.fn(init, args)
+        assert found_min.shape == ()
