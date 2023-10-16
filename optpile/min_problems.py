@@ -43,9 +43,9 @@ class Raydan1(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         t_i = jnp.arange(1, self.in_dim + 1) / 10
-        return [t_i]
+        return t_i
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         t_i = args
@@ -76,8 +76,8 @@ class Diagonal2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -109,8 +109,8 @@ class Diagonal3(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -142,8 +142,8 @@ class Hager(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -175,8 +175,8 @@ class Diagonal5(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -211,8 +211,8 @@ class QuadraticQF1(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -245,8 +245,8 @@ class QuadraticQF2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         i = jnp.arange(1, self.in_dim + 1)
@@ -279,8 +279,8 @@ class FLETCBV3(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1e-8, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1e-8, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         p, c = args
@@ -326,8 +326,8 @@ class ARWHEAD(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([4.0, 3.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([4.0, 3.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -362,8 +362,8 @@ class EG2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1 = y[0]
@@ -397,8 +397,8 @@ class ENGVAL1(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([4.0, 3.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([4.0, 3.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -440,11 +440,11 @@ class CURLY20(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # TODO(packquickly): this one is a natural candidate for multiple
         # `args`, but it requires an integer `random_generator` to support
         # randomness.
-        return [None]
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -455,7 +455,7 @@ class CURLY20(AbstractMinimisationProblem):
 
 
 # UOTF
-class DIXMAANA(AbstractMinimisationProblem):
+class _AbstractDIXMAANA(AbstractMinimisationProblem):
     name: ClassVar[str] = "DIXMAANA-DIXMANNL functions"
     difficulty: ClassVar[Optional[Difficulty]] = None
     minimum: ClassVar[Minimum] = Minimum(None, None)
@@ -485,20 +485,8 @@ class DIXMAANA(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        A = array_tuple([1.0, 0.0, 0.125, 0.125, 0, 0, 0, 0])
-        B = array_tuple([1.0, 0.0625, 0.0625, 0.0625, 0, 0, 0, 1])
-        C = array_tuple([1.0, 0.125, 0.125, 0.125, 0, 0, 0, 0])
-        D = array_tuple([1.0, 0.26, 0.26, 0.26, 0, 0, 0, 0])
-        E = array_tuple([1.0, 0.0, 0.126, 0.125, 1, 0, 0, 1])
-        F = array_tuple([1.0, 0.0625, 0.0625, 0.625, 1, 0, 0, 1])
-        G = array_tuple([1.0, 0.125, 0.125, 0.125, 1, 0, 0, 1])
-        H = array_tuple([1.0, 0.26, 0.26, 0.26, 1, 0, 0, 1])
-        I = array_tuple([1.0, 0.0, 0.125, 0.125, 2, 0, 0, 2])
-        J = array_tuple([1.0, 0.0625, 0.0625, 0.625, 2, 0, 0, 2])
-        K = array_tuple([1.0, 0.125, 0.125, 0.125, 2, 0, 0, 2])
-        L = array_tuple([1.0, 0.26, 0.26, 0.26, 2, 0, 0, 2])
-        return [A, B, C, D, E, F, G, H, I, J, K, L]
+    ) -> Optional[PyTree]:
+        ...
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3, c4, c5, c6, c7, c8 = args
@@ -516,6 +504,189 @@ class DIXMAANA(AbstractMinimisationProblem):
             y[: -2 * m] * y[2 * m :] * (index[: -2 * m] / self.in_dim) ** c8
         )
         return f1 + f2 + f3 + f4
+
+
+# TODO(packquickly): find a cleaner way to do this.
+
+
+class DIXMAANAA(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.0, 0.125, 0.125, 0, 0, 0, 0])
+
+
+class DIXMAANAB(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.0625, 0.0625, 0.0625, 0, 0, 0, 1])
+
+
+class DIXMAANAC(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.125, 0.125, 0.125, 0, 0, 0, 0])
+
+
+class DIXMAANAD(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.26, 0.26, 0.26, 0, 0, 0, 0])
+
+
+class DIXMAANAE(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.0, 0.126, 0.125, 1, 0, 0, 1])
+
+
+class DIXMAANAF(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 1, 0, 0, 1])
+
+
+class DIXMAANAG(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.125, 0.125, 0.125, 1, 0, 0, 1])
+
+
+class DIXMAANAH(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.26, 0.26, 0.26, 1, 0, 0, 1])
+
+
+class DIXMAANAI(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.0, 0.125, 0.125, 2, 0, 0, 2])
+
+
+class DIXMAANAJ(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 2, 0, 0, 2])
+
+
+class DIXMAANAK(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.125, 0.125, 0.125, 2, 0, 0, 2])
+
+
+class DIXMAANAL(_AbstractDIXMAANA):
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+    @additive_perturbation
+    def args(
+        self,
+        random_generator: Optional[RandomGenerator] = None,
+        options: Optional[dict] = None,
+        *,
+        key: Optional[PRNGKeyArray] = None,
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 0.26, 0.26, 0.26, 2, 0, 0, 2])
 
 
 # UOTF
@@ -543,8 +714,8 @@ class INDEF(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1 = y[0]
@@ -580,9 +751,9 @@ class EXPLIN1(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
+    ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return [array_tuple([0.1, 10])]
+        return array_tuple([0.1, 10])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
@@ -614,8 +785,8 @@ class HARKERP2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(2.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(2.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -650,8 +821,8 @@ class MCCORMCK(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1.5, 2.5, 1.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1.5, 2.5, 1.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3 = args
@@ -684,8 +855,8 @@ class Diagonal6(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         return jnp.sum(jnp.exp(y) - (1 - y))
@@ -716,8 +887,8 @@ class COSINE(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(0.5)]
+    ) -> Optional[PyTree]:
+        return jnp.array(0.5)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -749,8 +920,8 @@ class SINE(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(0.5)]
+    ) -> Optional[PyTree]:
+        return jnp.array(0.5)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -782,8 +953,8 @@ class HIMMELBG(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 3.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 3.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -816,8 +987,8 @@ class HIMMELH(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([3.0, 2.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([3.0, 2.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -849,8 +1020,8 @@ class Diagonal7(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(2.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(2.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -881,8 +1052,8 @@ class Diagonal8(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(2.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(2.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -913,8 +1084,8 @@ class Diagonal9(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(1e4)]
+    ) -> Optional[PyTree]:
+        return jnp.array(1e4)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -947,8 +1118,8 @@ class FullHessian3(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(2.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(2.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -986,8 +1157,8 @@ class Ackley1(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(20.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(20.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -1022,8 +1193,8 @@ class Ackley2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(200.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(200.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1058,8 +1229,8 @@ class Ackley3(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([200.0, 5.0, 3.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([200.0, 5.0, 3.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1094,8 +1265,8 @@ class Adjiman(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1132,8 +1303,8 @@ class Alpine2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1165,8 +1336,8 @@ class Bird(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1204,8 +1375,8 @@ class Bohachevsky2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 3.0, 4.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 3.0, 4.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1240,8 +1411,8 @@ class Bohachevsky3(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 3.0, 4.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 3.0, 4.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1276,8 +1447,8 @@ class BraninRCOS(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([5.1, 4.0, 5.0, 6.0, 10.0, 8.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([5.1, 4.0, 5.0, 6.0, 10.0, 8.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1316,8 +1487,8 @@ class BraninRCOS2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([5.1, 4.0, 5.0, 6.0, 10.0, 8.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([5.1, 4.0, 5.0, 6.0, 10.0, 8.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1353,8 +1524,8 @@ class CamelThree(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 1.05, 6])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 1.05, 6])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1387,8 +1558,8 @@ class CamelSix(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([4.0, 2.1, 3.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([4.0, 2.1, 3.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1427,8 +1598,8 @@ class ChenBird(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1e-3, 1.0, 0.5])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1e-3, 1.0, 0.5])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1464,8 +1635,8 @@ class Chichinadze(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([12.0, 11.0, 10.0, 8.0, 5.0, 0.5])]
+    ) -> Optional[PyTree]:
+        return array_tuple([12.0, 11.0, 10.0, 8.0, 5.0, 0.5])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1501,8 +1672,8 @@ class Colville(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([100.0, 90.0, 10.1, 19.8])]
+    ) -> Optional[PyTree]:
+        return array_tuple([100.0, 90.0, 10.1, 19.8])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2, y3, y4 = y
@@ -1546,8 +1717,8 @@ class Csendes(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(2.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(2.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -1585,8 +1756,8 @@ class Damavandi(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([2.0, 7.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([2.0, 7.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1626,8 +1797,8 @@ class DeckkersAarts(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(10.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(10.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1662,8 +1833,8 @@ class Easom(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1702,8 +1873,8 @@ class EggHolder(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(47.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(47.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -1741,8 +1912,8 @@ class Griewank(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(4000.0)]
+    ) -> Optional[PyTree]:
+        return jnp.array(4000.0)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c = args
@@ -1775,8 +1946,8 @@ class Hosaki(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([1.0, 8.0, 7.0, 7 / 3, 0.25])]
+    ) -> Optional[PyTree]:
+        return array_tuple([1.0, 8.0, 7.0, 7 / 3, 0.25])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1812,8 +1983,8 @@ class Keane(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1852,8 +2023,8 @@ class Mishra2(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1887,8 +2058,8 @@ class Mishra4(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [jnp.array(0.01)]
+    ) -> Optional[PyTree]:
+        return jnp.array(0.01)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1926,8 +2097,8 @@ class PenHolder(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [None]
+    ) -> Optional[PyTree]:
+        return None
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         del args
@@ -1966,8 +2137,8 @@ class Pathological(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([0.5, 100, 1e-3])]
+    ) -> Optional[PyTree]:
+        return array_tuple([0.5, 100, 1e-3])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3 = args
@@ -2003,8 +2174,8 @@ class Rump(AbstractMinimisationProblem):
         options: Optional[dict] = None,
         *,
         key: Optional[PRNGKeyArray] = None,
-    ) -> list[Optional[PyTree[Array]]]:
-        return [array_tuple([333.75, 11.0, 121.0, 5.5, 0.5, 2.0])]
+    ) -> Optional[PyTree]:
+        return array_tuple([333.75, 11.0, 121.0, 5.5, 0.5, 2.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
