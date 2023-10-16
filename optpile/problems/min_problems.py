@@ -1,15 +1,15 @@
 from typing import cast, ClassVar, Optional
 
 import jax.numpy as jnp
-import jax.random as jr
 from jaxtyping import Array, PRNGKeyArray, PyTree
 
-from .base import AbstractMinimisationProblem, Difficulty, Minimum
-from .custom_types import RandomGenerator
-from .misc import (
+from ..misc import (
     additive_perturbation,
     array_tuple,
+    default_floating_dtype,
 )
+from ..random_generators import RandomGenerator
+from .base import AbstractMinimisationProblem, Difficulty, Minimum
 
 
 #
@@ -260,7 +260,7 @@ class FLETCBV3(AbstractMinimisationProblem):
     name: ClassVar[str] = "FLETCBV 3 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
     minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: int = 99
+    in_dim: int = 10
 
     @additive_perturbation
     def init(
@@ -388,7 +388,7 @@ class ENGVAL1(AbstractMinimisationProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return 2 * jnp.ones(self.in_dim)
+        return 2.0 * jnp.ones(self.in_dim)
 
     @additive_perturbation
     def args(
@@ -421,7 +421,7 @@ class CURLY20(AbstractMinimisationProblem):
 
     def __init__(self, in_dim: int = 99):
         self.in_dim = in_dim
-        self.minimum = Minimum(0.0, jnp.zeros(self.in_dim))
+        self.minimum = Minimum(None, None)
 
     @additive_perturbation
     def init(
@@ -431,7 +431,7 @@ class CURLY20(AbstractMinimisationProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return jnp.ones(self.in_dim) / (1000 * (self.in_dim + 1))
+        return jnp.ones(self.in_dim) / (1000.0 * (self.in_dim + 1))
 
     @additive_perturbation
     def args(
@@ -476,7 +476,7 @@ class _AbstractDIXMAANA(AbstractMinimisationProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return 2 * jnp.ones(self.in_dim)
+        return 2.0 * jnp.ones(self.in_dim)
 
     @additive_perturbation
     def args(
@@ -521,7 +521,7 @@ class DIXMAANAA(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0, 0.125, 0.125, 0, 0, 0, 0])
+        return array_tuple([1.0, 0.0, 0.125, 0.125, 0.0, 0.0, 0.0, 0.0])
 
 
 class DIXMAANAB(_AbstractDIXMAANA):
@@ -536,7 +536,7 @@ class DIXMAANAB(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0625, 0.0625, 0.0625, 0, 0, 0, 1])
+        return array_tuple([1.0, 0.0625, 0.0625, 0.0625, 0.0, 0.0, 0.0, 1.0])
 
 
 class DIXMAANAC(_AbstractDIXMAANA):
@@ -551,7 +551,7 @@ class DIXMAANAC(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.125, 0.125, 0.125, 0, 0, 0, 0])
+        return array_tuple([1.0, 0.125, 0.125, 0.125, 0.0, 0.0, 0.0, 0.0])
 
 
 class DIXMAANAD(_AbstractDIXMAANA):
@@ -566,7 +566,7 @@ class DIXMAANAD(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.26, 0.26, 0.26, 0, 0, 0, 0])
+        return array_tuple([1.0, 0.26, 0.26, 0.26, 0.0, 0.0, 0.0, 0.0])
 
 
 class DIXMAANAE(_AbstractDIXMAANA):
@@ -581,7 +581,7 @@ class DIXMAANAE(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0, 0.126, 0.125, 1, 0, 0, 1])
+        return array_tuple([1.0, 0.0, 0.126, 0.125, 1.0, 0.0, 0.0, 1.0])
 
 
 class DIXMAANAF(_AbstractDIXMAANA):
@@ -596,7 +596,7 @@ class DIXMAANAF(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 1, 0, 0, 1])
+        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 1.0, 0.0, 0.0, 1.0])
 
 
 class DIXMAANAG(_AbstractDIXMAANA):
@@ -611,7 +611,7 @@ class DIXMAANAG(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.125, 0.125, 0.125, 1, 0, 0, 1])
+        return array_tuple([1.0, 0.125, 0.125, 0.125, 1.0, 0.0, 0.0, 1.0])
 
 
 class DIXMAANAH(_AbstractDIXMAANA):
@@ -626,7 +626,7 @@ class DIXMAANAH(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.26, 0.26, 0.26, 1, 0, 0, 1])
+        return array_tuple([1.0, 0.26, 0.26, 0.26, 1.0, 0.0, 0.0, 1.0])
 
 
 class DIXMAANAI(_AbstractDIXMAANA):
@@ -641,7 +641,7 @@ class DIXMAANAI(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0, 0.125, 0.125, 2, 0, 0, 2])
+        return array_tuple([1.0, 0.0, 0.125, 0.125, 2.0, 0.0, 0.0, 2.0])
 
 
 class DIXMAANAJ(_AbstractDIXMAANA):
@@ -656,7 +656,7 @@ class DIXMAANAJ(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 2, 0, 0, 2])
+        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 2.0, 0.0, 0.0, 2.0])
 
 
 class DIXMAANAK(_AbstractDIXMAANA):
@@ -671,7 +671,7 @@ class DIXMAANAK(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.125, 0.125, 0.125, 2, 0, 0, 2])
+        return array_tuple([1.0, 0.125, 0.125, 0.125, 2.0, 0.0, 0.0, 2.0])
 
 
 class DIXMAANAL(_AbstractDIXMAANA):
@@ -686,44 +686,7 @@ class DIXMAANAL(_AbstractDIXMAANA):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.26, 0.26, 0.26, 2, 0, 0, 2])
-
-
-# UOTF
-# CUTE
-class INDEF(AbstractMinimisationProblem):
-    name: ClassVar[str] = "INDEF function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: int = 99
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return jnp.arange(1, self.in_dim + 1) / (self.in_dim + 1)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([2.0])
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        y1 = y[0]
-        yn = y[-1]
-
-        f1 = jnp.sum(y)
-        f2 = 0.5 * jnp.sum(2 * y[1:-1] - yn - y1)
-        return f1 + f2
+        return array_tuple([1.0, 0.26, 0.26, 0.26, 2.0, 0.0, 0.0, 2.0])
 
 
 # UOTF
@@ -753,11 +716,11 @@ class EXPLIN1(AbstractMinimisationProblem):
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
         # should just be two numbers of very different scales.
-        return array_tuple([0.1, 10])
+        return array_tuple([0.1, 10.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2 = args
-        jnp.sum(jnp.exp(c1 * y[:-1] * y[1:]))
+        return jnp.sum(jnp.exp(c1 * y[:-1] * y[1:]))
 
 
 # UOTF
@@ -776,7 +739,7 @@ class HARKERP2(AbstractMinimisationProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return jnp.arange(1, self.in_dim + 1)
+        return jnp.arange(1, self.in_dim + 1, dtype=default_floating_dtype())
 
     @additive_perturbation
     def args(
@@ -792,7 +755,7 @@ class HARKERP2(AbstractMinimisationProblem):
         c = args
         f1 = jnp.sum(y**2)
         f2 = jnp.sum(y + (1 / c) * y**2)
-        f3 = c * (jnp.triu(jnp.ones((self.in_dim, self.in_dim)), 1) @ y) ** 2
+        f3 = jnp.sum(c * (jnp.triu(jnp.ones((self.in_dim, self.in_dim)), 1) @ y) ** 2)
         return f1 - f2 + f3
 
 
@@ -828,38 +791,6 @@ class MCCORMCK(AbstractMinimisationProblem):
         c1, c2, c3 = args
         tmp = -c1 * y[:-1] + c2 * y[1:] + c3 + (y[:-1] - y[1:]) ** 2
         return jnp.sum(tmp + jnp.sin(y[:-1] + y[1:]))
-
-
-# UOTF
-# CUTE
-class Diagonal6(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Diagonal 6 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: int = 99
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return jnp.ones(self.in_dim)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return jnp.array(1.0)
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        return jnp.sum(jnp.exp(y) - (1 - y))
 
 
 # UOTF
@@ -963,42 +894,8 @@ class HIMMELBG(AbstractMinimisationProblem):
 
 
 # UOTF
-# CUTE
-class HIMMELH(AbstractMinimisationProblem):
-    name: ClassVar[str] = "HIMMELH function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return array_tuple([1.5, 1.5])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([3.0, 2.0])
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        y1, y2 = y
-        c1, c2 = args
-        return -c1 * y1 - c2 * y2 + c2 + y1**3 + y2**2
-
-
-# UOTF
 class Diagonal7(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Diagonal 8 function"
+    name: ClassVar[str] = "Diagonal 7 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
     minimum: ClassVar[Minimum] = Minimum(None, None)
     in_dim: int = 99
@@ -1091,7 +988,7 @@ class Diagonal9(AbstractMinimisationProblem):
         c = args
         index = jnp.arange(1, self.in_dim)
         yn = y[-1]
-        return jnp.sum(jnp.exp(y[:-1]) - index * y[:-1]) + c * yn
+        return jnp.sum(jnp.exp(y[:-1]) - index * y[:-1]) + c * yn**2
 
 
 # UOTF
@@ -1241,77 +1138,6 @@ class Ackley3(AbstractMinimisationProblem):
 
 
 # LSBF
-class Adjiman(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Adjiman function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(-2.02181, (2.0, 0.10578))
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return None
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        del args
-        y1, y2 = y
-        return jnp.cos(y1) * jnp.sin(y2) - y1 / (y2**2 + 1)
-
-
-# LSBF
-class Alpine2(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Alpine 2 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: Minimum
-    in_dim: int
-
-    def __init__(self, in_dim: int = 99):
-        self.in_dim = in_dim
-        self.minimum = Minimum(2.808**self.in_dim, 7.917 * jnp.ones(in_dim))
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return None
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        del args
-        return jnp.prod(jnp.sqrt(y) * jnp.sin(y))
-
-
-# LSBF
 class Bird(AbstractMinimisationProblem):
     name: ClassVar[str] = "Bird function"
     difficulty: ClassVar[Optional[Difficulty]] = None
@@ -1327,7 +1153,7 @@ class Bird(AbstractMinimisationProblem):
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0])
+        return array_tuple([1.5, 3.0])
 
     @additive_perturbation
     def args(
@@ -1478,7 +1304,7 @@ class BraninRCOS2(AbstractMinimisationProblem):
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return array_tuple([5, 5.0])
+        return array_tuple([5.0, 5.0])
 
     @additive_perturbation
     def args(
@@ -1525,7 +1351,7 @@ class CamelThree(AbstractMinimisationProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([2.0, 1.05, 6])
+        return array_tuple([2.0, 1.05, 6.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -1611,43 +1437,6 @@ class ChenBird(AbstractMinimisationProblem):
 
 
 # LSBF
-class Chichinadze(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Chichinadze function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(-42.944387, (6.189866, 0.5))
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([12.0, 11.0, 10.0, 8.0, 5.0, 0.5])
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        y1, y2 = y
-        c1, c2, c3, c4, c5, c6 = args
-        f1 = y1**2 - c1 * y1 + c2
-        f2 = c3 * jnp.cos(jnp.pi * y1 * 0.5) + c4 * jnp.sin(c5 * jnp.pi * y1 * 0.5)
-        f3 = (1 / c5) * (c5**c6) * (1 / jnp.exp(-c6 * (y2 - c6) ** 2))
-        return f1 + f2 - f3
-
-
-# LSBF
 class Colville(AbstractMinimisationProblem):
     name: ClassVar[str] = "Colville function"
     difficulty: ClassVar[Optional[Difficulty]] = None
@@ -1705,10 +1494,10 @@ class Csendes(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = jr.PRNGKey(0),
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return jr.uniform(key, (self.in_dim,), minval=-1, maxval=1)
+        return jnp.ones(self.in_dim)
 
     @additive_perturbation
     def args(
@@ -1730,8 +1519,7 @@ class Csendes(AbstractMinimisationProblem):
 
 
 # LSBF
-# Typo in LSBF, this function usually has the degenerate
-# case specialised to 0.
+# Needs special casing at the optimum not mentioned in LSBF...
 class Damavandi(AbstractMinimisationProblem):
     name: ClassVar[str] = "Damavandi function"
     difficulty: ClassVar[Optional[Difficulty]] = None
@@ -1744,10 +1532,11 @@ class Damavandi(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([1.0, 1.0])
+        # Found that initialising very close to the global min
+        # is usually required for this problem.
+        return array_tuple([1.7, 2.2])
 
     @additive_perturbation
     def args(
@@ -1762,21 +1551,20 @@ class Damavandi(AbstractMinimisationProblem):
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
         c1, c2 = args
-        numerator = jnp.sin(jnp.pi * (y1 - c1) * jnp.sin(jnp.pi * (y2 - c1)))
+        numerator = jnp.sin(jnp.pi * (y1 - c1)) * jnp.sin(jnp.pi * (y2 - c1))
         denominator = (jnp.pi**2) * (y1 - c1) * (y2 - c1)
         denom_nonzero = jnp.abs(denominator) > jnp.finfo(denominator.dtype).eps
         denom_safe = jnp.where(denom_nonzero, denominator, 1)
-        f1 = jnp.where(denom_nonzero, numerator / denom_safe, 0.0)
+        f1 = 1 - jnp.where(denom_nonzero, jnp.abs(numerator / denom_safe) ** 5, 1.0)
         f2 = c1 + (y1 - c2) ** 2 + c1 * (y2 - c2) ** 2
         return f1 * f2
 
 
 # LSBF
-# LSBF marked the minimum incorrectly.
 class DeckkersAarts(AbstractMinimisationProblem):
     name: ClassVar[str] = "Decckers-Aarts function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(-24771.094, (0.0, -15.0))
+    minimum: ClassVar[Minimum] = Minimum(-24776.521, (0.0, -15.0))
     in_dim: ClassVar[int] = 2
 
     @additive_perturbation
@@ -1785,10 +1573,10 @@ class DeckkersAarts(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return array_tuple([5.0, 0.0])
+        return array_tuple([1.0, 10.0])
 
     @additive_perturbation
     def args(
@@ -1809,47 +1597,11 @@ class DeckkersAarts(AbstractMinimisationProblem):
 
 
 # LSBF
-class Easom(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Easom function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(-1.0, (jnp.pi, jnp.pi))
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: PRNGKeyArray = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return None
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        del args
-        y1, y2 = y
-        f1 = -jnp.cos(y1) * jnp.cos(y2)
-        f2 = jnp.exp(-((y1 - jnp.pi) ** 2) - (y2 - jnp.pi) ** 2)
-        return f1 * f2
-
-
-# LSBF
-# Typo in minimum in LSBF
+# Don't constrain to hte same region as in LSBF, so `None` minima
 class EggHolder(AbstractMinimisationProblem):
     name: ClassVar[str] = "Egg Holder function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(-959.64, jnp.array([512.0, 404.2319]))
+    minimum: ClassVar[Minimum] = Minimum(None, None)
     in_dim: int = 99
     # TODO(packquickly): decide if supporting a minimum with an argmin
     # of a specific dimension is okay. This is particularly awkward
@@ -1937,7 +1689,7 @@ class Hosaki(AbstractMinimisationProblem):
         key: PRNGKeyArray = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return array_tuple([1.0, 1.0])
+        return array_tuple([3.0, 1.0])
 
     @additive_perturbation
     def args(
@@ -1962,7 +1714,7 @@ class Hosaki(AbstractMinimisationProblem):
 class Keane(AbstractMinimisationProblem):
     name: ClassVar[str] = "Keane function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(0.673668, (0.0, 1.39325))
+    minimum: ClassVar[Minimum] = Minimum(0.0, None)
     in_dim: ClassVar[int] = 2
 
     @additive_perturbation
@@ -1995,120 +1747,6 @@ class Keane(AbstractMinimisationProblem):
 
 
 # LSBF
-class Mishra2(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Mishra 2 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: Minimum
-    in_dim: int = 99
-
-    def __init__(self, in_dim: int = 99):
-        self.in_dim = in_dim
-        self.minimum = Minimum(2.0, jnp.ones(self.in_dim))
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: PRNGKeyArray = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return 0.5 * jnp.zeros(self.in_dim)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return None
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        del args
-        sumval = jnp.sum(0.5 * (y[:-1] + y[1:]))
-        return (1 + self.in_dim - sumval) ** (self.in_dim - sumval)
-
-
-# LSBF
-# Typo  in LSBF, no square on `y2` in the sqrt.
-class Mishra4(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Mishra 2 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(-0.19664, (-9.94112, -9.99957))
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: PRNGKeyArray = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return [array_tuple([-5.0, -5.0])]
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return jnp.array(0.01)
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        y1, y2 = y
-        c = args
-        f1 = jnp.sqrt(jnp.abs(jnp.sin(jnp.sqrt(jnp.abs(y1**2 + y2)))))
-        f2 = c * (y1 + y2)
-        return f1 + f2
-
-
-# LSBF
-# I (packquickly) don't get the same minimum as specified in LSBF.
-# I am not sure if this is a mistake in LSBF, but I do not think it
-# is a mistake in my implementation
-class PenHolder(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Pen Holder function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: PRNGKeyArray = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([5.0, 5.0])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return None
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        del args
-        y1, y2 = y
-        f1 = jnp.abs(1 - jnp.sqrt(y1**2 + y2**2) / jnp.pi)
-        f2 = -jnp.exp(1 / jnp.abs(jnp.cos(y1) * jnp.cos(y2) * jnp.exp(f1)))
-        return f2
-
-
-# LSBF
 class Pathological(AbstractMinimisationProblem):
     name: ClassVar[str] = "Pathological function"
     difficulty: ClassVar[Optional[Difficulty]] = None
@@ -2138,48 +1776,10 @@ class Pathological(AbstractMinimisationProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([0.5, 100, 1e-3])
+        return array_tuple([0.5, 100.0, 1e-3])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3 = args
         f1 = jnp.sin(jnp.sqrt(c2 * y[:-1] ** 2 + y[1:] ** 2)) ** 2 - c1
         f2 = 1 + c3 * (y[:-1] ** 2 - 2 * y[:-1] * y[1:] + y[1:] ** 2) ** 2
         return jnp.sum(0.5 + f1 / f2)
-
-
-# LSBF
-# Typo in LSBF, they divide `(y1/2*y2)`, which returns a NaN at their
-# specified minimum.
-class Rump(AbstractMinimisationProblem):
-    name: ClassVar[str] = "Rump function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(0.0, (0.0, 0.0))
-    in_dim: ClassVar[int] = 2
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: PRNGKeyArray = None,
-    ) -> PyTree[Array]:
-        # arbitrary, may need to adjust
-        return array_tuple([-3.0, 3.0])
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([333.75, 11.0, 121.0, 5.5, 0.5, 2.0])
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        y1, y2 = y
-        c1, c2, c3, c4, c5, c6 = args
-        f1 = (c1 - y1**2) * y2**6 + c4 * y2**8 + c5 * y1 / (c6 + y2)
-        f2 = (y1**2) * (c2 * (y1**2) * (y2**2) - c3 * y2**4 - c6)
-        return f1 + f2

@@ -1,20 +1,19 @@
-from typing import Protocol, Union
+from enum import Enum
+from typing import Any, Union
 from typing_extensions import TypeVar
 
-import jax
-from jaxtyping import Array, PRNGKeyArray, PyTree
+import equinox.internal as eqxi
+from jaxtyping import Array, PyTree
 
+
+sentinel: Any = eqxi.doc_repr(object(), "sentinel")
 
 Out = TypeVar("Out", bound=Union[PyTree[Array], Array])
 Y = TypeVar("Y", bound=Union[PyTree[Array], Array])
 Args = TypeVar("Args", bound=PyTree[Array])
 
 
-class RandomGenerator(Protocol):
-    # Similar to `Callable`, but with properly typed keyword argument and
-    # specific argument names. I may change this to an abstract class later,
-    # but for now prefer structural typing for this.
-    def __call__(
-        self, struct: jax.ShapeDtypeStruct, *, key: PRNGKeyArray
-    ) -> PyTree[Array]:
-        ...
+class Metric(Enum):
+    STEPS = 1
+    WALL_CLOCK = 2
+    CPU_TIME = 3

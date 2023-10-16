@@ -8,7 +8,7 @@ import jax.core
 import jax.numpy as jnp
 import jax.tree_util as jtu
 from equinox.internal import ω
-from jaxtyping import Array, ArrayLike, PyTree, Scalar
+from jaxtyping import Array, ArrayLike, Bool, PyTree, Scalar
 
 
 #
@@ -16,6 +16,11 @@ from jaxtyping import Array, ArrayLike, PyTree, Scalar
 # Most of these are taken from Optimistix:
 # (https://github.com/patrick-kidger/optimistix)
 #
+
+
+def sum_squares(tree: PyTree[Array]):
+    mapped = jtu.tree_map(lambda x: jnp.sum(jnp.square(x)), tree)
+    return jtu.tree_reduce(lambda x, y: x + y, mapped)
 
 
 def array_tuple(in_list: list[Union[float, int, bool, Scalar]]) -> tuple[Array]:
@@ -100,3 +105,11 @@ def tree_full_like(struct: PyTree, fill_value: ArrayLike, allow_static: bool = F
             else x
         )
     return jtu.tree_map(fn, struct)
+
+
+def tree_where(
+    pred: Bool[ArrayLike, ""], true: PyTree[ArrayLike], false: PyTree[ArrayLike]
+) -> PyTree[Array]:
+    """Return the `true` or `false` pytree depending on `pred`."""
+    keep = lambda a, b: jnp.where(pred, a, b)
+    return jtu.tree_map(keep, true, false)

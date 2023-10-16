@@ -1,5 +1,5 @@
 [project]
-name = "optpil"
+name = "optpile"
 version = "0.0.1"
 description = "A collection of nonlinear programming problems for benchmarking optimisation software in JAX."
 readme = "README.md"
@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 urls = {repository = "https://github.com/packquickly/optpile" }
-dependencies = ["equinox>=0.11.0", "optimistix>=0.0.5", "jax>=0.4.11", "jaxtyping>=0.2.20", "typing_extensions>=4.5.0"]
+dependencies = ["matplotlib>=3.8.0", "equinox>=0.11.0", "optimistix>=0.0.5", "jax>=0.4.11", "jaxtyping>=0.2.20", "typing_extensions>=4.5.0", "ax-platform>=0.3.4", "tqdm>=4.66.0"]
 
 [build-system]
 requires = ["hatchling"]

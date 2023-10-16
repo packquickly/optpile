@@ -3,10 +3,11 @@ from enum import Enum
 from typing import Generic, Optional
 
 import equinox as eqx
-from equinox import AbstractClassVar, AbstractVar
+from equinox import AbstractVar
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
-from .custom_types import Args, Out, RandomGenerator, Y
+from ..custom_types import Args, Out, Y
+from ..random_generators import RandomGenerator
 
 
 class Minimum(eqx.Module):
@@ -20,8 +21,10 @@ class Difficulty(Enum):
 
 
 class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
-    name: AbstractClassVar[str]
-    difficulty: AbstractClassVar[Optional[Difficulty]]
+    name: AbstractVar[str]
+    difficulty: AbstractVar[Optional[Difficulty]]
+    minimum: AbstractVar[Minimum]
+    in_dim: AbstractVar[int]
 
     @abc.abstractmethod
     def init(
@@ -29,7 +32,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: Optional[PRNGKeyArray]
+        key: Optional[PRNGKeyArray],
     ) -> Y:
         """Returns a reasonable default initialisation for the problem.
 
@@ -56,7 +59,7 @@ class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: Optional[PRNGKeyArray]
+        key: Optional[PRNGKeyArray],
     ) -> Optional[Args]:
         """Returns a list of any arguments the problem may use. This can include
         specificwparameters used in test functions. Each set of args in the list
@@ -88,13 +91,10 @@ class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
 
 
 class AbstractMinimisationProblem(AbstractTestProblem[Scalar, PyTree[Array], PyTree]):
-    minimum: AbstractVar[Minimum]
-    in_dim: AbstractVar[int]
+    ...
 
 
 class AbstractLeastSquaresProblem(
     AbstractTestProblem[PyTree[Array], PyTree[Array], PyTree]
 ):
-    minimum: AbstractVar[Minimum]
-    in_dim: AbstractVar[int]
     out_dim: AbstractVar[int]
