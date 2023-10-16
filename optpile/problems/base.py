@@ -6,7 +6,8 @@ import equinox as eqx
 from equinox import AbstractClassVar, AbstractVar
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
-from .custom_types import Args, Out, RandomGenerator, Y
+from ..custom_types import Args, Out, Y
+from ..random_generators import RandomGenerator
 
 
 class Minimum(eqx.Module):
@@ -22,6 +23,8 @@ class Difficulty(Enum):
 class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
     name: AbstractClassVar[str]
     difficulty: AbstractClassVar[Optional[Difficulty]]
+    minimum: AbstractVar[Minimum]
+    in_dim: AbstractVar[int]
 
     @abc.abstractmethod
     def init(
@@ -88,13 +91,10 @@ class AbstractTestProblem(eqx.Module, Generic[Out, Y, Args]):
 
 
 class AbstractMinimisationProblem(AbstractTestProblem[Scalar, PyTree[Array], PyTree]):
-    minimum: AbstractVar[Minimum]
-    in_dim: AbstractVar[int]
+    ...
 
 
 class AbstractLeastSquaresProblem(
     AbstractTestProblem[PyTree[Array], PyTree[Array], PyTree]
 ):
-    minimum: AbstractVar[Minimum]
-    in_dim: AbstractVar[int]
     out_dim: AbstractVar[int]

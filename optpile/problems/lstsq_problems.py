@@ -5,15 +5,15 @@ import jax.flatten_util as jfu
 import jax.numpy as jnp
 import jax.random as jr
 from equinox.internal import ω
-from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
+from jaxtyping import Array, PRNGKeyArray, PyTree
 
-from .base import AbstractLeastSquaresProblem, Difficulty, Minimum
-from .custom_types import RandomGenerator
-from .misc import (
+from ..misc import (
     additive_perturbation,
     array_tuple,
     default_floating_dtype,
 )
+from ..random_generators import RandomGenerator
+from .base import AbstractLeastSquaresProblem, Difficulty, Minimum
 
 
 #
@@ -157,7 +157,7 @@ class DecoupledRosenbrock(AbstractLeastSquaresProblem):
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         # Rosenbrock doesn't translate well to PyTrees
         flat_y, _ = jfu.ravel_pytree(y)
-        index = jnp.arange(1, flat_y.size + 1)
+        index = jnp.arange(1, flat_y.size + 1, dtype=default_floating_dtype())
         jnp.where(index % 2 == 0, flat_y, flat_y**2)
         # Remember that all these values will be squared, hence why
         # this looks different than what is on Wikipedia.
@@ -210,7 +210,7 @@ class CoupledRosenbrock(AbstractLeastSquaresProblem):
 class FreudensteinRoth(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "Freudenstein and Roth function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(0.0, (5.0, 4.0))
+    minimum: ClassVar[Minimum] = Minimum(48.9842, (5.0, 4.0))
     in_dim: ClassVar[int] = 2
     out_dim: ClassVar[int] = 2
 
@@ -222,7 +222,7 @@ class FreudensteinRoth(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return array_tuple([0.5, -2])
+        return array_tuple([0.5, -2.0])
 
     @additive_perturbation
     def args(
@@ -246,7 +246,7 @@ class FreudensteinRoth(AbstractLeastSquaresProblem):
 class PowellBadlyScaled(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "Powell's badly scaled function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(0, (1.098 * 1e-5, 9.106))
+    minimum: ClassVar[Minimum] = Minimum(0, (1.098, 9.1 - 6))
     in_dim: ClassVar[int] = 2
     out_dim: ClassVar[int] = 2
 
@@ -304,7 +304,7 @@ class BrownBadlyScaled(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([1e6, 2, 1e-6, 2])
+        return array_tuple([1e6, 2.0, 1e-6, 2.0])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         y1, y2 = y
@@ -341,7 +341,7 @@ class Beale(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        i = jnp.arange(1, 4)
+        i = jnp.arange(1, 4, dtype=default_floating_dtype())
         z_i = jnp.array([1.5, 2.25, 2.625])
         return (i, z_i)
 
@@ -390,7 +390,7 @@ class JennrichSampson(AbstractLeastSquaresProblem):
     ) -> Optional[PyTree]:
         c1 = jnp.array(2.0)
         c2 = jnp.array(2.0)
-        i = jnp.arange(1, self.out_dim + 1)
+        i = jnp.arange(1, self.out_dim + 1, dtype=default_floating_dtype())
         return (c1, c2, i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
@@ -472,7 +472,7 @@ class Bard(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        u_i = jnp.arange(1, 16)
+        u_i = jnp.arange(1, 16, dtype=default_floating_dtype())
         v_i = 16 - u_i
         w_i = jnp.minimum(u_i, v_i)
         # fmt: off
@@ -515,7 +515,7 @@ class Gaussian(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        i = jnp.arange(1, 16)
+        i = jnp.arange(1, 16, dtype=default_floating_dtype())
         t_i = (8 - i) / 2
         # fmt: off
         z_i = jnp.array([
@@ -548,7 +548,7 @@ class Meyer(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return array_tuple([0.02, 4000, 250])
+        return array_tuple([0.02, 4000.0, 250.0])
 
     @additive_perturbation
     def args(
@@ -558,8 +558,8 @@ class Meyer(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        i = jnp.arange(1, self.out_dim + 1)
-        t_i = 45 + 5 * i
+        i = jnp.arange(1, self.out_dim + 1, dtype=default_floating_dtype())
+        t_i = 45.0 + 5.0 * i
         # fmt: off
         z_i = jnp.array([
             34780, 28610, 23650, 19630, 16370, 13720, 11540, 9744, 
@@ -606,9 +606,9 @@ class GULFRnD(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        i = jnp.arange(1, self.out_dim + 1)
+        i = jnp.arange(1, self.out_dim + 1, dtype=default_floating_dtype())
         t_i = i / 100
-        z_i = 25 + (-50 * jnp.log(t_i)) ** (2 / 3)
+        z_i = 25.0 + (-50.0 * jnp.log(t_i)) ** (2 / 3)
         return (i, t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
@@ -647,8 +647,8 @@ class BoxThreeDim(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        t_i = (0.1) * jnp.arange(1, self.out_dim + 1)
-        c = jnp.array(10)
+        t_i = (0.1) * jnp.arange(1, self.out_dim + 1, dtype=default_floating_dtype())
+        c = jnp.array(10.0)
         return (t_i, c)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
@@ -766,7 +766,6 @@ class KowalikOsborne(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        jnp.arange(1, 12)
         z_i = jnp.array(
             [
                 0.1957,
@@ -840,48 +839,48 @@ class BrownDennis(AbstractLeastSquaresProblem):
         return (y1 + t_i * y2 - jnp.exp(t_i)) ** 2 + tmp
 
 
-# TUOS (17)
-class Osborne1(AbstractLeastSquaresProblem):
-    name: ClassVar[str] = "Osborne 1 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(5.46489 * 1e-5, None)
-    in_dim: ClassVar[int] = 5
-    out_dim: ClassVar[int] = 33
+# # TUOS (17)
+# class Osborne1(AbstractLeastSquaresProblem):
+#     name: ClassVar[str] = "Osborne 1 function"
+#     difficulty: ClassVar[Optional[Difficulty]] = None
+#     minimum: ClassVar[Minimum] = Minimum(5.46489 * 1e-5, None)
+#     in_dim: ClassVar[int] = 5
+#     out_dim: ClassVar[int] = 33
 
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return array_tuple([0.5, 1.5, -1.0, 0.01, 0.02])
+#     @additive_perturbation
+#     def init(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> PyTree[Array]:
+#         return array_tuple([0.5, 1.5, -1.0, 0.01, 0.02])
 
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        # This is (i - 1) in TUOS since they use 1-indexing.
-        t_i = 10 * jnp.arange(33)
-        # fmt: off
-        z_i = jnp.array([
-            0.844, 0.908, 0.932, 0.936, 0.925, 0.908, 0.881, 0.850, 0.818,
-            0.784, 0.751, 0.718, 0.685, 0.658, 0.628, 0.603, 0.580, 0.558,
-            0.538, 0.522, 0.506, 0.490, 0.478, 0.467, 0.457, 0.448, 0.438,
-            0.431, 0.424, 0.420, 0.414, 0.411, 0.406
-        ])
-        # fmt: on
-        return (t_i, z_i)
+#     @additive_perturbation
+#     def args(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> Optional[PyTree]:
+#         # This is (i - 1) in TUOS since they use 1-indexing.
+#         t_i = 10.0 * jnp.arange(33, dtype=default_floating_dtype())
+#         # fmt: off
+#         z_i = jnp.array([
+#             0.844, 0.908, 0.932, 0.936, 0.925, 0.908, 0.881, 0.850, 0.818,
+#             0.784, 0.751, 0.718, 0.685, 0.658, 0.628, 0.603, 0.580, 0.558,
+#             0.538, 0.522, 0.506, 0.490, 0.478, 0.467, 0.457, 0.448, 0.438,
+#             0.431, 0.424, 0.420, 0.414, 0.411, 0.406
+#         ])
+#         # fmt: on
+#         return (t_i, z_i)
 
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        y1, y2, y3, y4, y5 = y
-        t_i, z_i = args
-        return z_i - (y1 + y2 * jnp.exp(-t_i * y4) + y3 * jnp.exp(-t_i * y5))
+#     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
+#         y1, y2, y3, y4, y5 = y
+#         t_i, z_i = args
+#         return z_i - (y1 + y2 * jnp.exp(-t_i * y4) + y3 * jnp.exp(-t_i * y5))
 
 
 # TUOS (18)
@@ -920,7 +919,7 @@ class BiggsEXP6(AbstractLeastSquaresProblem):
     ) -> Optional[PyTree]:
         i = jnp.arange(1, self.out_dim + 1)
         t_i = (0.1) * i
-        z_i = jnp.exp(-t_i) - 5 * jnp.exp(-10 * t_i) + 3 * jnp.exp(-4 * t_i)
+        z_i = jnp.exp(-t_i) - 5.0 * jnp.exp(-10.0 * t_i) + 3.0 * jnp.exp(-4.0 * t_i)
         return (t_i, z_i)
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
@@ -946,7 +945,7 @@ class Osborne2(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return array_tuple([1.3, 0.65, 0.65, 0.7, 0.6, 3, 5, 7, 2, 4.5, 5.5])
+        return array_tuple([1.3, 0.65, 0.65, 0.7, 0.6, 3.0, 5.0, 7.0, 2.0, 4.5, 5.5])
 
     @additive_perturbation
     def args(
@@ -1072,9 +1071,9 @@ class ExtendedPowellSingular(AbstractLeastSquaresProblem):
     ) -> PyTree[Array]:
         index = jnp.arange(1, self.in_dim + 1)
         init = jnp.ones(self.in_dim)
-        init = jnp.where(index % 4 == 1, 3 * init, init)
-        init = jnp.where(index % 4 == 2, -1 * init, init)
-        init = jnp.where(index % 4 == 3, 0 * init, init)
+        init = jnp.where(index % 4 == 1, 3.0 * init, init)
+        init = jnp.where(index % 4 == 2, -1.0 * init, init)
+        init = jnp.where(index % 4 == 3, 0.0 * init, init)
         return init
 
     @additive_perturbation
@@ -1129,7 +1128,7 @@ class PenaltyFunction1(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return jnp.arange(1, self.in_dim + 1)
+        return jnp.arange(1, self.in_dim + 1, dtype=default_floating_dtype())
 
     @additive_perturbation
     def args(
@@ -1139,7 +1138,7 @@ class PenaltyFunction1(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        return array_tuple([jnp.sqrt(1e-5), 1, 0.25])
+        return array_tuple([jnp.sqrt(1e-5), 1.0, 0.25])
 
     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
         c1, c2, c3 = args
@@ -1650,70 +1649,70 @@ class LinearRank1Zero(AbstractLeastSquaresProblem):
         i = jnp.arange(2, self.out_dim)
         j = jnp.arange(2, self.in_dim)
         y_mid = y[1:-1]
-        f1 = -1
-        fm = -1
+        f1 = jnp.array(-1.0)
+        fm = jnp.array(-1.0)
         return (f1, (i - 1) * jnp.sum(j * y_mid) - 1, fm)
 
 
-# TUOS (35)
-class Chebyquad(AbstractLeastSquaresProblem):
-    name: ClassVar[str] = "Chebyquad function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: Minimum
-    in_dim: int
-    out_dim: int
+# # TUOS (35)
+# class Chebyquad(AbstractLeastSquaresProblem):
+#     name: ClassVar[str] = "Chebyquad function"
+#     difficulty: ClassVar[Optional[Difficulty]] = None
+#     minimum: Minimum
+#     in_dim: int
+#     out_dim: int
 
-    def __check_init__(self):
-        if self.in_dim > self.out_dim:
-            raise ValueError(f"{self.name} requires `in_dim <= out_dim`.")
+#     def __check_init__(self):
+#         if self.in_dim > self.out_dim:
+#             raise ValueError(f"{self.name} requires `in_dim <= out_dim`.")
 
-    def __init__(self, in_dim: int = 10, out_dim: int = 10):
-        # arbitrary default
-        self.in_dim = in_dim
-        self.out_dim = out_dim
+#     def __init__(self, in_dim: int = 10, out_dim: int = 10):
+#         # arbitrary default
+#         self.in_dim = in_dim
+#         self.out_dim = out_dim
 
-        if (self.in_dim == self.out_dim) and ((self.in_dim < 7) or (self.in_dim == 9)):
-            self.minimum = Minimum(0, None)
-        elif (self.in_dim == self.out_dim) and (self.in_dim == 8):
-            self.minimum = Minimum(3.51687 * 1e-3, None)
-        elif (self.in_dim == self.out_dim) and (self.in_dim == 10):
-            self.minimum = Minimum(6.50395 * 1e-3, None)
+#         if (self.in_dim == self.out_dim) and ((self.in_dim < 7) or (self.in_dim == 9)):
+#             self.minimum = Minimum(0, None)
+#         elif (self.in_dim == self.out_dim) and (self.in_dim == 8):
+#             self.minimum = Minimum(3.51687 * 1e-3, None)
+#         elif (self.in_dim == self.out_dim) and (self.in_dim == 10):
+#             self.minimum = Minimum(6.50395 * 1e-3, None)
 
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return jnp.arange(1, self.in_dim + 1) / (self.in_dim + 1)
+#     @additive_perturbation
+#     def init(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> PyTree[Array]:
+#         return jnp.arange(1, self.in_dim + 1) / (self.in_dim + 1)
 
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return None
+#     @additive_perturbation
+#     def args(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> Optional[PyTree]:
+#         return None
 
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        index = jnp.arange(1, self.out_dim + 1)
-        cheb_integrals = jnp.where(index % 2 == 0, -1 / (index**2 - 1), 0)
-        cheb_broadcast = lambda z: jax.vmap(self._simple_cheb, in_axes=(0, None))(
-            index, z
-        )
-        # Returns the array who's ith value is `sum_j (T_i(x_j))`.
-        broadcast_sum = jnp.sum(jax.vmap(cheb_broadcast)(y), axis=0)
-        return 1 / self.out_dim * broadcast_sum - cheb_integrals
+#     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
+#         index = jnp.arange(1, self.out_dim + 1)
+#         cheb_integrals = jnp.where(index % 2 == 0, -1 / (index**2 - 1), 0)
+#         cheb_broadcast = lambda z: jax.vmap(self._simple_cheb, in_axes=(0, None))(
+#             index, z
+#         )
+#         # Returns the array who's ith value is `sum_j (T_i(x_j))`.
+#         broadcast_sum = jnp.sum(jax.vmap(cheb_broadcast)(y), axis=0)
+#         return 1 / self.out_dim * broadcast_sum - cheb_integrals
 
-    def _simple_cheb(self, n: Scalar, x: Scalar):
-        """A simple approximation to the chebyshev polynomial of the first
-        kind shifted to [0, 1]. Only valid in this range.
-        """
-        return jnp.cos(n * jnp.arccos(2 * x - 1))
+#     def _simple_cheb(self, n: Scalar, x: Scalar):
+#         """A simple approximation to the chebyshev polynomial of the first
+#         kind shifted to [0, 1]. Only valid in this range.
+#         """
+#         return jnp.cos(n * jnp.arccos(2 * x - 1))
 
 
 # UOTF
@@ -2013,46 +2012,46 @@ class TRIDIA(AbstractLeastSquaresProblem):
         return f1, f2
 
 
-# UOTF
-# CUTE
-class ARGLINB(AbstractLeastSquaresProblem):
-    name: ClassVar[str] = "ARGLINB function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: int
-    out_dim: int
+# # UOTF
+# # CUTE
+# class ARGLINB(AbstractLeastSquaresProblem):
+#     name: ClassVar[str] = "ARGLINB function"
+#     difficulty: ClassVar[Optional[Difficulty]] = None
+#     minimum: ClassVar[Minimum] = Minimum(None, None)
+#     in_dim: int
+#     out_dim: int
 
-    def __init__(self, in_dim: int = 99):
-        # arbitrary default
-        self.in_dim = in_dim
-        self.out_dim = self.in_dim
+#     def __init__(self, in_dim: int = 99):
+#         # arbitrary default
+#         self.in_dim = in_dim
+#         self.out_dim = self.in_dim
 
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return jnp.ones(self.in_dim)
+#     @additive_perturbation
+#     def init(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> PyTree[Array]:
+#         return jnp.ones(self.in_dim)
 
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return jnp.array(1.0)
+#     @additive_perturbation
+#     def args(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> Optional[PyTree]:
+#         return jnp.array(1.0)
 
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        c = args
-        i = jnp.arange(1, self.out_dim + 1)
-        j = jnp.arange(1, self.in_dim + 1)
-        xbroadcast = jnp.outer(y, jnp.ones(self.out_dim))
-        return i * jnp.einsum("ji, j -> i", xbroadcast, j) - c
+#     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
+#         c = args
+#         i = jnp.arange(1, self.out_dim + 1)
+#         j = jnp.arange(1, self.in_dim + 1)
+#         xbroadcast = jnp.outer(y, jnp.ones(self.out_dim))
+#         return i * jnp.einsum("ji, j -> i", xbroadcast, j) - c
 
 
 # UOTF
@@ -2331,51 +2330,52 @@ class CUBE(AbstractLeastSquaresProblem):
         return f1, f2
 
 
-# UOTF
-# CUTE
-class ARGLINC(AbstractLeastSquaresProblem):
-    name: ClassVar[str] = "ARGLINC function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: int
-    out_dim: int
+# Come back to, I think the implementation may be slightly off.
+# # UOTF
+# # CUTE
+# class ARGLINC(AbstractLeastSquaresProblem):
+#     name: ClassVar[str] = "ARGLINC function"
+#     difficulty: ClassVar[Optional[Difficulty]] = None
+#     minimum: ClassVar[Minimum] = Minimum(None, None)
+#     in_dim: int
+#     out_dim: int
 
-    def __check_init__(self):
-        if self.in_dim > self.out_dim:
-            raise ValueError(f"`out_dim` must be greater than `in_dim` for {self.name}")
+#     def __check_init__(self):
+#         if self.in_dim > self.out_dim:
+#             raise ValueError(f"`out_dim` must be greater than `in_dim` for {self.name}")
 
-    def __init__(self, in_dim: int = 99, out_dim: int = 99):
-        self.in_dim = in_dim
-        self.out_dim = self.in_dim
+#     def __init__(self, in_dim: int = 99, out_dim: int = 99):
+#         self.in_dim = in_dim
+#         self.out_dim = self.in_dim
 
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return jnp.ones(self.in_dim)
+#     @additive_perturbation
+#     def init(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> PyTree[Array]:
+#         return jnp.ones(self.in_dim)
 
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([jnp.sqrt(2), 1.0])
+#     @additive_perturbation
+#     def args(
+#         self,
+#         random_generator: Optional[RandomGenerator] = None,
+#         options: Optional[dict] = None,
+#         *,
+#         key: Optional[PRNGKeyArray] = None,
+#     ) -> Optional[PyTree]:
+#         return array_tuple([jnp.sqrt(2), 1.0])
 
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        c1, c2 = args
-        j = jnp.arange(1, self.in_dim + 1)
-        i = jnp.arange(1, self.out_dim + 1)
-        out = jnp.outer(j * y, i - 1) - 1
-        f1 = jnp.sum(out, axis=0)
-        # c1 is not a typo.
-        return c1, f1
+#     def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
+#         c1, c2 = args
+#         j = jnp.arange(2, self.in_dim)
+#         i = jnp.arange(2, self.out_dim)
+#         out = jnp.outer(j * y[1:-1], i - 1) - 1
+#         f1 = jnp.sum(out, axis=0)
+#         # c1 is not a typo.
+#         return c1, f1
 
 
 # UOTF
@@ -2816,7 +2816,7 @@ class SINCOS(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
-        return array_tuple([3, 0.1])
+        return array_tuple([3.0, 0.1])
 
     @additive_perturbation
     def args(
@@ -2891,7 +2891,7 @@ class DeVilliersGlasser1(AbstractLeastSquaresProblem):
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0, 0.0, 0.0])
+        return array_tuple([58.0, 1.0, 3.0, 1.0])
 
     @additive_perturbation
     def args(
@@ -2901,7 +2901,7 @@ class DeVilliersGlasser1(AbstractLeastSquaresProblem):
         *,
         key: Optional[PRNGKeyArray] = None,
     ) -> Optional[PyTree]:
-        t_i = 0.1 * (jnp.arange(1, self.out_dim + 1) - 1)
+        t_i = 0.1 * (jnp.arange(1, self.out_dim + 1) - 1.0)
         y_i = 60.137 * (1.371**t_i) * jnp.sin(3.112 * t_i + 1.761)
         return (t_i, y_i)
 
@@ -2928,7 +2928,7 @@ class DeVilliersGlasser2(AbstractLeastSquaresProblem):
         key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
-        return array_tuple([0.0, 0.0, 0.0, 0.0, 0.0])
+        return array_tuple([53.0, 1.0, 3.0, 2.0, 0.0])
 
     @additive_perturbation
     def args(

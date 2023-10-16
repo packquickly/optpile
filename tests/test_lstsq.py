@@ -23,8 +23,11 @@ def test_problems(problem):
         pass
     elif problem.minimum.min is not None:
         if problem.minimum.argmin is not None:
+            init = problem.init()
             args = problem.args()
             found_min = sum_squares(problem.fn(problem.minimum.argmin, args))
+            # make sure init is correct shape and not just the argmin
+            problem.fn(init, args)
             assert jnp.allclose(found_min, problem.minimum.min, atol=1e-5)
         else:
             # If we don't have a known argmin, just try to solve the equation
@@ -40,5 +43,5 @@ def test_problems(problem):
         # make sure the function works.
         init = problem.init()
         args = problem.args()
-        problem.fn(init, args)
-        assert True
+        out = problem.fn(init, args)
+        assert out is not None
