@@ -12,7 +12,7 @@ repos:
     rev: v1.1.331
     hooks:
     - id: pyright
-      additional_dependencies: ["ax-platform", "tqdm", "jax", "equinox", "pytest", "optimistix", "matplotlib"]
+      additional_dependencies: ["dill", "ax-platform", "tqdm", "jax", "equinox", "pytest", "optimistix", "matplotlib"]
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.6.3
     hooks:

@@ -1,4 +1,5 @@
 from .all_problems import all_problem_list as all_problem_list
+from .multiprocess import ProcessPool as ProcessPool
 from .opt_tester import (
     OptTester as OptTester,
     SingleProblemResult as SingleProblemResult,
