@@ -12,6 +12,8 @@ from equinox.internal import ω
 from jaxtyping import Array, Float, Int, PRNGKeyArray, Scalar, ScalarLike
 from tqdm import tqdm
 
+from optpile.multiprocess import ProcessPool
+
 from .custom_types import sentinel
 from .misc import sum_squares
 from .problems import (
@@ -152,37 +154,37 @@ class OptTester(eqx.Module):
         """
         # TODO(packquickly): implement problem difficulty
         del problem_difficulty
-        output_results = []
-
         is_lstsq_solver = isinstance(self.solver, optx.AbstractLeastSquaresSolver)
-        len(problems)
+        problems_and_options = []
         for i, problem in tqdm(enumerate(problems)):
-            problem_options_i = _process_options_list(problem_options, i)
-            solver_options_i = _process_options_list(solver_options, i)
             is_min_problem = isinstance(problem, AbstractMinimisationProblem)
             if is_min_problem and is_lstsq_solver:
                 continue
             elif is_min_problem and least_squares_only:
                 continue
             else:
-                # The same key is intentionally used for each run, it makes
-                # debugging easier.
-                output_results.append(
-                    self.single_run(
-                        problem,
-                        max_steps,
-                        n_runs_per_problem,
-                        multiplicative_output_noise,
-                        additive_output_noise,
-                        noise_random_generator,
-                        init_random_generator,
-                        args_random_generator,
-                        problem_options_i,
-                        solver_options_i,
-                        key=key,
-                    )
-                )
+                problem_options = _process_options_list(problem_options, i)
+                solver_options = _process_options_list(solver_options, i)
+                problems_and_options.append((problem, problem_options, solver_options))
 
+        def single_run_wrapper(problems_and_options):
+            problem, problem_options, solver_options = problems_and_options
+            return self.single_run(
+                problem,
+                max_steps,
+                n_runs_per_problem,
+                multiplicative_output_noise,
+                additive_output_noise,
+                noise_random_generator,
+                init_random_generator,
+                args_random_generator,
+                problem_options,
+                solver_options,
+                key=key,
+            )
+
+        pool = ProcessPool()
+        output_results = pool.map(single_run_wrapper, problems_and_options)
         return TestResults(self.test_name, output_results)
 
     # @eqx.filter_jit
