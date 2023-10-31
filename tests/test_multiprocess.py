@@ -3,7 +3,7 @@ import optpile as op
 
 def test_multiprocess():
     pool = op.ProcessPool()
-    in_list = [i for i in range(10)]
+    in_list = [i for i in range(13)]
 
     def square(x):
         return x**2

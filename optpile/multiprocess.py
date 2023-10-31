@@ -1,10 +1,10 @@
+import math
 import os
 from collections.abc import Callable
 from multiprocessing import Process, Queue
 from typing import Optional
 
 import dill
-from tqdm import tqdm
 
 
 #
@@ -53,37 +53,37 @@ class ProcessPool:
 
     def map(self, fn: Callable, input_list: list):
         # Used for message passing between processes.
+        chunk_size = math.ceil(len(input_list) / self.max_processes)
+        n_chunks = len(input_list) // chunk_size
         identified_sequence = [(id, value) for id, value in enumerate(input_list)]
+        chunked_sequence = []
+        for i in range(0, n_chunks - 1):
+            chunked_sequence.append(
+                identified_sequence[i * chunk_size : (i + 1) * chunk_size]
+            )
+        chunked_sequence.append(identified_sequence[(n_chunks - 1) * chunk_size :])
         q = Queue()
 
         def id_managed_fn(id_value, q):
-            id, value = id_value
-            output = fn(value)
-            q.put((id, output))
+            ids, value = zip(*id_value)
+            output = map(fn, value)
+            q.put([(id, output) for (id, output) in zip(ids, output)])
 
         def start_new_process(id_value):
             p = CustomProcess(target=id_managed_fn, args=(id_value, q))
             p.start()
             return p
 
-        for _ in range(self.max_processes):
-            self._processes.append(start_new_process(identified_sequence.pop(0)))
+        for _ in range(n_chunks):
+            self._processes.append(start_new_process(chunked_sequence.pop(0)))
 
         results = []
-        progress_bar = tqdm(total=len(identified_sequence))
-        while identified_sequence:
-            for i, p in enumerate(self._processes):
-                if not p.is_alive():
-                    self._processes[i] = start_new_process(identified_sequence.pop(0))
-                    results.append(q.get())
-                    progress_bar.update(1)
-                    # Goes back to the while loop
-                    break
-
-        progress_bar.close()
         for p in self._processes:
             p.join()
-            results.append(1)
+            results.append(q.get())
+
+        # This dark magic comprehension just flattens a list of lists
+        results = [item for sublist in results for item in sublist]
 
         # Empty the list of processes.
         self._processes = []
