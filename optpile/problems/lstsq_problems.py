@@ -158,7 +158,6 @@ class DecoupledRosenbrock(AbstractLeastSquaresProblem):
         # Rosenbrock doesn't translate well to PyTrees
         flat_y, _ = jfu.ravel_pytree(y)
         index = jnp.arange(1, flat_y.size + 1, dtype=default_floating_dtype())
-        jnp.where(index % 2 == 0, flat_y, flat_y**2)
         # Remember that all these values will be squared, hence why
         # this looks different than what is on Wikipedia.
         diffs_y = 10 * (flat_y[:-1] - flat_y[1:])
@@ -1763,10 +1762,10 @@ class WhiteHolst(AbstractLeastSquaresProblem):
 # UOTF
 class PSC1(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "Generalised PSC1 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: Minimum
     in_dim: int
     out_dim: int
+    difficulty: ClassVar[Optional[Difficulty]] = None
+    minimum: Minimum = Minimum(49.4999923, None)
 
     def __init__(self, in_dim: int = 99):
         # arbitrary default
@@ -1934,7 +1933,7 @@ class FLETCHCR(AbstractLeastSquaresProblem):
 class BDQRTIC(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "BDQRTIC function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(263.56802, None)
     in_dim: int
     out_dim: int
 
@@ -2196,9 +2195,9 @@ class POWER(AbstractLeastSquaresProblem):
 class CRAGGLVY(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "CRAGGLVY function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: Minimum
-    in_dim: int
-    out_dim: int
+    minimum: Minimum = Minimum(7.4379587, None)
+    in_dim: int = 99
+    out_dim: int = 99
 
     def __init__(self, in_dim: int = 99):
         # arbitrary default
@@ -2251,7 +2250,7 @@ class CRAGGLVY(AbstractLeastSquaresProblem):
 class EDENSCH(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "EDENSCH function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(12968.59082, None)
     in_dim: int
     out_dim: int
 
@@ -2388,7 +2387,7 @@ class CUBE(AbstractLeastSquaresProblem):
 class GENHUMPS(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "GENHUMPS function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(2493.995117, None)
     in_dim: int
     out_dim: int
 
@@ -2809,7 +2808,7 @@ class GeneralisedQuartic(AbstractLeastSquaresProblem):
 class SINCOS(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "SINCOS function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(0.38659951, None)
     in_dim: ClassVar[int] = 2
     out_dim: ClassVar[int] = 3
 
@@ -2960,7 +2959,7 @@ class DeVilliersGlasser2(AbstractLeastSquaresProblem):
 class ElAttarVidyasagarDutta(AbstractLeastSquaresProblem):
     name: ClassVar[str] = "El-Attar-Vidyasagar-Dutta function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(27.3755569, None)
     in_dim: ClassVar[int] = 2
     out_dim: ClassVar[int] = 2
     # I (packquickly) believe the reported argmin for this function
@@ -3042,12 +3041,12 @@ class CoatingThickness(AbstractLeastSquaresProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = jr.PRNGKey(0),
+        key: Optional[PRNGKeyArray] = jr.PRNGKey(0),
     ) -> Optional[PyTree]:
         # TODO(packquickly): document this well. The problem requires a PRNGKey
         # always, but only a random generator to incorporate measurement error.
         dim2 = self.out_dim // 2
-        grid_key, param_key, noise_key = jr.split(key, 3)
+        grid_key, param_key, noise_key = jr.split(key, 3)  # pyright: ignore
         gridpoints = jr.uniform(
             jr.PRNGKey(0), (dim2, 2), dtype=default_floating_dtype()
         )

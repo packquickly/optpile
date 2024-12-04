@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import cast, Optional, Union
+from typing import Any, cast, Optional, Union
 from typing_extensions import TypeAlias
 
 import equinox as eqx
@@ -30,7 +30,9 @@ from .random_generators import NormalRandomGenerator, RandomGenerator
 # TODO(packquickly): support multiple termination criteria.
 
 
-Solver: TypeAlias = Union[optx.AbstractMinimiser, optx.AbstractLeastSquaresSolver]
+Solver: TypeAlias = (
+    Any  # = Union[optx.AbstractMinimiser, optx.AbstractLeastSquaresSolver]
+)
 Options: TypeAlias = Optional[Union[list[dict], dict]]
 
 
@@ -155,7 +157,6 @@ class OptTester(eqx.Module):
         output_results = []
 
         is_lstsq_solver = isinstance(self.solver, optx.AbstractLeastSquaresSolver)
-        len(problems)
         for i, problem in tqdm(enumerate(problems)):
             problem_options_i = _process_options_list(problem_options, i)
             solver_options_i = _process_options_list(solver_options, i)
@@ -260,14 +261,14 @@ class OptTester(eqx.Module):
             readout = lambda x: 0.5 * sum_squares(x)
             # Why is this needed? shouldn't the conversion happen
             # automatically since optimise is specified?
-            if isinstance(self.solver, optx.AbstractMinimiser):
-                transform = lambda x: 0.5 * sum_squares(x)
-            else:
-                transform = lambda x: x
+            # if isinstance(self.solver, optx.AbstractMinimiser):
+            #     transform = lambda x: 0.5 * sum_squares(x)
+            # else:
+            #     transform = lambda x: x
         else:
             optimise = optx.minimise
             readout = lambda x: x
-            transform = lambda x: x
+            # transform = lambda x: x
             if isinstance(self.solver, optx.AbstractLeastSquaresSolver):
                 raise ValueError(
                     "Attempted to use a least-squares solver on a "
@@ -309,7 +310,7 @@ class OptTester(eqx.Module):
             else:
                 f = out
                 aux = None
-            return transform(handle_noise(f, key=key)), (readout(f), aux)
+            return handle_noise(f, key=key), (readout(f), aux)
 
         init_key, args_key, noise_key = jr.split(key, 3)
         init_keys = jr.split(init_key, n_runs)
@@ -382,13 +383,12 @@ class OptTester(eqx.Module):
         """
         if isinstance(problem, AbstractLeastSquaresProblem):
             readout = lambda x: 0.5 * sum_squares(x)
-            if isinstance(self.solver, optx.AbstractMinimiser):
-                transform = lambda x: 0.5 * sum_squares(x)
-            else:
-                transform = lambda x: x
+            # if isinstance(self.solver, optx.AbstractMinimiser):
+            #     transform = lambda x: 0.5 * sum_squares(x)
+            # else:
+            #     transform = lambda x: x
         else:
             readout = lambda x: x
-            transform = lambda x: x
             if isinstance(self.solver, optx.AbstractLeastSquaresSolver):
                 raise ValueError(
                     "Attempted to use a least-squares solver on a "
@@ -430,7 +430,7 @@ class OptTester(eqx.Module):
             else:
                 f = out
                 aux = None
-            return transform(handle_noise(f, key=key)), (readout(f), aux)
+            return handle_noise(f, key=key), (readout(f), aux)
 
         if problem_options is None:
             problem_options = {}

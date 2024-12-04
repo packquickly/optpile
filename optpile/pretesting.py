@@ -20,7 +20,7 @@ Options: TypeAlias = Optional[Union[list[dict], dict]]
 def optimise_parameters(
     test_name: str,
     problems: list[AbstractTestProblem],
-    evaluate_problem: Callable,
+    evaluate_result: Callable,
     from_params_to_solver: Callable[[dict], Solver],
     params: list[dict],
     n_tuning_runs: int = 30,
@@ -46,7 +46,7 @@ def optimise_parameters(
             raise ValueError("Recieved no optimisers!")
         loss = 0.0
         for problem_result in results:
-            loss = loss + evaluate_problem(problem_result).item()
+            loss = loss + evaluate_result(problem_result).item()
         return {"loss": loss}
 
     objective = {"loss": ObjectiveProperties(minimize=True)}

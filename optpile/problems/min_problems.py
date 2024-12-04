@@ -23,7 +23,7 @@ from .base import AbstractMinimisationProblem, Difficulty, Minimum
 class Raydan1(AbstractMinimisationProblem):
     name: ClassVar[str] = "Raydan 1 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(495.0, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -56,7 +56,7 @@ class Raydan1(AbstractMinimisationProblem):
 class Diagonal2(AbstractMinimisationProblem):
     name: ClassVar[str] = "Diagonal 2 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(15.6853017, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -89,7 +89,7 @@ class Diagonal2(AbstractMinimisationProblem):
 class Diagonal3(AbstractMinimisationProblem):
     name: ClassVar[str] = "Diagonal 3 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-4510.495117, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -122,7 +122,7 @@ class Diagonal3(AbstractMinimisationProblem):
 class Hager(AbstractMinimisationProblem):
     name: ClassVar[str] = "Hager function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-640.052795, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -155,7 +155,7 @@ class Hager(AbstractMinimisationProblem):
 class Diagonal5(AbstractMinimisationProblem):
     name: ClassVar[str] = "Diagonal 5 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(68.6215972, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -187,7 +187,7 @@ class Diagonal5(AbstractMinimisationProblem):
 class QuadraticQF1(AbstractMinimisationProblem):
     name: ClassVar[str] = "Quadratic QF1 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-0.00505050, None)
     in_dim: int
 
     def __init__(self, in_dim: int = 99):
@@ -225,7 +225,7 @@ class QuadraticQF1(AbstractMinimisationProblem):
 class QuadraticQF2(AbstractMinimisationProblem):
     name: ClassVar[str] = "Quadratic QF2 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-2475.00512695, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -259,7 +259,7 @@ class QuadraticQF2(AbstractMinimisationProblem):
 class FLETCBV3(AbstractMinimisationProblem):
     name: ClassVar[str] = "FLETCBV 3 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-2.25833719e-5, None)
     in_dim: int = 10
 
     @additive_perturbation
@@ -342,7 +342,7 @@ class ARWHEAD(AbstractMinimisationProblem):
 class EG2(AbstractMinimisationProblem):
     name: ClassVar[str] = "EG2 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-98.0, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -377,7 +377,7 @@ class EG2(AbstractMinimisationProblem):
 class ENGVAL1(AbstractMinimisationProblem):
     name: ClassVar[str] = "ENGVA 1 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(107.9779968, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -411,9 +411,9 @@ class ENGVAL1(AbstractMinimisationProblem):
 # CUTE
 class CURLY20(AbstractMinimisationProblem):
     name: ClassVar[str] = "CURLY 20 function"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: Minimum
     in_dim: int
+    difficulty: ClassVar[Optional[Difficulty]] = None
+    minimum: Minimum = Minimum(-9931.315429, None)
 
     def __check_init__(self):
         if self.in_dim < 20:
@@ -455,246 +455,11 @@ class CURLY20(AbstractMinimisationProblem):
 
 
 # UOTF
-class _AbstractDIXMAANA(AbstractMinimisationProblem):
-    name: ClassVar[str] = "DIXMAANA-DIXMANNL functions"
-    difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
-    in_dim: int
-
-    def __check_init__(self):
-        if self.in_dim % 3 != 0:
-            raise ValueError(f"{self.name} requires `in_dim` divisible by 3.")
-
-    def __init__(self, in_dim: int = 99):
-        self.in_dim = in_dim
-
-    @additive_perturbation
-    def init(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> PyTree[Array]:
-        return 2.0 * jnp.ones(self.in_dim)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        ...
-
-    def fn(self, y: PyTree[Array], args: PyTree[Array]) -> PyTree[Array]:
-        c1, c2, c3, c4, c5, c6, c7, c8 = args
-        m = self.in_dim // 3
-        index = jnp.arange(1, self.in_dim + 1)
-
-        f1 = 1 + jnp.sum(c1 * y**2 * (index / self.in_dim) ** c5)
-        f2 = jnp.sum(
-            c2 * (y[:-1] ** 2 * (y[1:] + y[1:] ** 2)) * (index[:-1] / self.in_dim) ** c6
-        )
-        f3 = c3 * jnp.sum(
-            (y[:-m] ** 2) * (y[m:] ** 4) * (index[:-m] / self.in_dim) ** c7
-        )
-        f4 = c4 * jnp.sum(
-            y[: -2 * m] * y[2 * m :] * (index[: -2 * m] / self.in_dim) ** c8
-        )
-        return f1 + f2 + f3 + f4
-
-
-# TODO(packquickly): find a cleaner way to do this.
-
-
-class DIXMAANAA(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0, 0.125, 0.125, 0.0, 0.0, 0.0, 0.0])
-
-
-class DIXMAANAB(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0625, 0.0625, 0.0625, 0.0, 0.0, 0.0, 1.0])
-
-
-class DIXMAANAC(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.125, 0.125, 0.125, 0.0, 0.0, 0.0, 0.0])
-
-
-class DIXMAANAD(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.26, 0.26, 0.26, 0.0, 0.0, 0.0, 0.0])
-
-
-class DIXMAANAE(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0, 0.126, 0.125, 1.0, 0.0, 0.0, 1.0])
-
-
-class DIXMAANAF(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 1.0, 0.0, 0.0, 1.0])
-
-
-class DIXMAANAG(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.125, 0.125, 0.125, 1.0, 0.0, 0.0, 1.0])
-
-
-class DIXMAANAH(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.26, 0.26, 0.26, 1.0, 0.0, 0.0, 1.0])
-
-
-class DIXMAANAI(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0, 0.125, 0.125, 2.0, 0.0, 0.0, 2.0])
-
-
-class DIXMAANAJ(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.0625, 0.0625, 0.625, 2.0, 0.0, 0.0, 2.0])
-
-
-class DIXMAANAK(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.125, 0.125, 0.125, 2.0, 0.0, 0.0, 2.0])
-
-
-class DIXMAANAL(_AbstractDIXMAANA):
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
-    @additive_perturbation
-    def args(
-        self,
-        random_generator: Optional[RandomGenerator] = None,
-        options: Optional[dict] = None,
-        *,
-        key: Optional[PRNGKeyArray] = None,
-    ) -> Optional[PyTree]:
-        return array_tuple([1.0, 0.26, 0.26, 0.26, 2.0, 0.0, 0.0, 2.0])
-
-
-# UOTF
 # CUTE
 class EXPLIN1(AbstractMinimisationProblem):
     name: ClassVar[str] = "EXPLIN1 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(98.0, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -728,7 +493,7 @@ class EXPLIN1(AbstractMinimisationProblem):
 class HARKERP2(AbstractMinimisationProblem):
     name: ClassVar[str] = "HARKERP2 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-0.60355389, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -764,7 +529,7 @@ class HARKERP2(AbstractMinimisationProblem):
 class MCCORMCK(AbstractMinimisationProblem):
     name: ClassVar[str] = "MCCORMCK function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-919111552.0, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -798,7 +563,7 @@ class MCCORMCK(AbstractMinimisationProblem):
 class COSINE(AbstractMinimisationProblem):
     name: ClassVar[str] = "COSINE function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-98.0, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -831,7 +596,7 @@ class COSINE(AbstractMinimisationProblem):
 class SINE(AbstractMinimisationProblem):
     name: ClassVar[str] = "SINE function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-9.4852771, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -864,7 +629,7 @@ class SINE(AbstractMinimisationProblem):
 class HIMMELBG(AbstractMinimisationProblem):
     name: ClassVar[str] = "HIMMELBG function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(0.0, None)
     in_dim: ClassVar[int] = 2
 
     @additive_perturbation
@@ -897,7 +662,7 @@ class HIMMELBG(AbstractMinimisationProblem):
 class Diagonal7(AbstractMinimisationProblem):
     name: ClassVar[str] = "Diagonal 7 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-80.868034, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -929,7 +694,7 @@ class Diagonal7(AbstractMinimisationProblem):
 class Diagonal8(AbstractMinimisationProblem):
     name: ClassVar[str] = "Diagonal 8 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-47.5648651, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -961,7 +726,7 @@ class Diagonal8(AbstractMinimisationProblem):
 class Diagonal9(AbstractMinimisationProblem):
     name: ClassVar[str] = "Diagonal 9 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-14990.308593, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -995,7 +760,7 @@ class Diagonal9(AbstractMinimisationProblem):
 class FullHessian3(AbstractMinimisationProblem):
     name: ClassVar[str] = "Full Hessian FH3 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-0.24999368, None)
     in_dim: int = 99
 
     @additive_perturbation
@@ -1103,7 +868,7 @@ class Ackley2(AbstractMinimisationProblem):
 class Ackley3(AbstractMinimisationProblem):
     name: ClassVar[str] = "Ackley 3 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-235.382095, None)
     in_dim: ClassVar[int] = 2
     # The listed function and minimum in LSBF is incorrect.
     # The function is adjusted, but the init is just `None`.
@@ -1292,7 +1057,7 @@ class BraninRCOS(AbstractMinimisationProblem):
 class BraninRCOS2(AbstractMinimisationProblem):
     name: ClassVar[str] = "Branin RCOS 2 function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-23.6555, None)
     in_dim: ClassVar[int] = 2
 
     @additive_perturbation
@@ -1403,7 +1168,7 @@ class CamelSix(AbstractMinimisationProblem):
 class ChenBird(AbstractMinimisationProblem):
     name: ClassVar[str] = "Chen bird function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-1.473669044, None)
     in_dim: ClassVar[int] = 2
 
     @additive_perturbation
@@ -1601,7 +1366,7 @@ class DeckkersAarts(AbstractMinimisationProblem):
 class EggHolder(AbstractMinimisationProblem):
     name: ClassVar[str] = "Egg Holder function"
     difficulty: ClassVar[Optional[Difficulty]] = None
-    minimum: ClassVar[Minimum] = Minimum(None, None)
+    minimum: ClassVar[Minimum] = Minimum(-42655.96875, None)
     in_dim: int = 99
     # TODO(packquickly): decide if supporting a minimum with an argmin
     # of a specific dimension is okay. This is particularly awkward
@@ -1613,7 +1378,7 @@ class EggHolder(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = None,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
         return 300 * jnp.ones(self.in_dim)
@@ -1652,7 +1417,7 @@ class Griewank(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = None,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
         return jnp.ones(self.in_dim)
@@ -1686,7 +1451,7 @@ class Hosaki(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = None,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
         return array_tuple([3.0, 1.0])
@@ -1723,7 +1488,7 @@ class Keane(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = None,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
         return array_tuple([1.0, 1.0])
@@ -1763,7 +1528,7 @@ class Pathological(AbstractMinimisationProblem):
         random_generator: Optional[RandomGenerator] = None,
         options: Optional[dict] = None,
         *,
-        key: PRNGKeyArray = None,
+        key: Optional[PRNGKeyArray] = None,
     ) -> PyTree[Array]:
         # arbitrary, may need to adjust
         return jnp.ones(self.in_dim)

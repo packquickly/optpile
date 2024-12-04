@@ -1,12 +1,13 @@
 import functools as ft
+from collections.abc import Callable
+from typing import Any
 
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-import optimistix as optx
+from tqdm import tqdm
 
-from .custom_types import Metric
-from .opt_tester import TestResults
+from .problems import AbstractTestProblem
 
 
 plt.style.use("ggplot")
@@ -17,55 +18,42 @@ def performance_profile(ratios, t):
     return jnp.sum(ratios_greater_than_t) / ratios.size
 
 
+# TODO(packquickly): Handle the typing of the solvers better
 def plot_performance_profile(
-    results: list[TestResults],
+    solvers_names: tuple[list[Any], list[str]],
+    problems: list[AbstractTestProblem],
     plot_title: str,
-    performance_metric: Metric = Metric.STEPS,
+    evaluate_problem: Callable,
+    xlabel: str = r"runtime/min runtime",
+    # performance_metric: Metric = Metric.STEPS,
     log2_scale: bool = True,
 ):
-    if len(results) < 2:
+    solvers, names = solvers_names
+    if len(solvers) < 2:
         raise ValueError(
             "`results` needs at least two sets of test results "
             "ran on the same set of problems to generate a performance profile."
         )
 
-    n_solvers = len(results)
-    n_problems = len(results[0])
+    n_solvers = len(solvers)
+    n_problems = len(problems)
 
-    results_same_len = [len(x) == n_problems for x in results]
-    all_same_len = ft.reduce(lambda x, y: x and y, results_same_len)
-    if not all_same_len:
-        raise ValueError(
-            "`results` must be ran on the same set of test problems! "
-            "Not all the results passed had the same number of test problems. This may "
-            "have happened from comparing a minimiser to a least-squares solver and "
-            "forgetting to set `least_squares_only` to `True`."
-        )
+    perf_measures = [jnp.zeros((n_problems)) for _ in range(n_solvers)]
+    losses = jnp.full(n_solvers, jnp.inf)
 
-    perf_measures = [jnp.zeros((n_problems)) for _ in results]
+    for prob_id, problem in tqdm(enumerate(problems)):
+        for solver_id, solver_result in enumerate(solvers):
+            losses = losses.at[solver_id].set(
+                evaluate_problem(solvers[solver_id], problem)
+            )
 
-    for prob_id in range(n_problems):
-        # TODO(packquickly): make this more generic
-        if performance_metric == Metric.STEPS:
-            step_vals = jnp.full(n_solvers, jnp.inf)
-            succeeded = jnp.zeros(n_solvers)
+        min_loss = jnp.min(losses)
+        ratios = jnp.where(jnp.invert(jnp.isinf(losses)), losses / min_loss, jnp.inf)
 
-            for solver_id, solver_result in enumerate(results):
-                step_vals = step_vals.at[solver_id].set(
-                    jnp.mean(solver_result[prob_id].n_steps)
-                )
-                succeeded = succeeded.at[solver_id].set(
-                    jnp.all(solver_result[prob_id].result == optx.RESULTS.successful)
-                )
-            min_steps = jnp.min(step_vals)
-            ratios = jnp.where(succeeded, step_vals / min_steps, jnp.inf)
-            for solver_id in range(n_solvers):
-                perf_measures[solver_id] = (
-                    perf_measures[solver_id].at[prob_id].set(ratios[solver_id])
-                )
-        else:
-            # not implemented yet
-            assert False
+        for solver_id in range(n_solvers):
+            perf_measures[solver_id] = (
+                perf_measures[solver_id].at[prob_id].set(ratios[solver_id])
+            )
 
     perf_profiles = [
         ft.partial(performance_profile, ratios) for ratios in perf_measures
@@ -76,15 +64,15 @@ def plot_performance_profile(
     if log2_scale:
         plot_values = jnp.linspace(0, 7, 100)
         test_values = 2**plot_values
-        xlabel = r" $ \log_2 $ of num steps/min num steps"
+        xlabel = r"$ \log_2 $ " + xlabel
     else:
         plot_values = jnp.linspace(0, 130, 100)
         test_values = plot_values
-        xlabel = r" num_steps / min num steps"
+        xlabel = xlabel
 
     for test_id, profile_fn in enumerate(perf_profiles):
         profile = jax.vmap(profile_fn)(test_values)
-        plt.plot(plot_values, profile, ".-", label=results[test_id].test_name)
+        plt.plot(plot_values, profile, ".-", label=names[test_id])
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
