@@ -1,4 +1,4 @@
-# optpile
+# Optpile: an Unconstrained Optimisation Benchmark Suite
 A collection of nonlinear programming problems for benchmarking optimisation software in JAX.
 
 The API is a work in progress, and subject to change.
